@@ -4,6 +4,10 @@ textarea {
 	resize: none;
 }
 
+.pal_col_btn {
+	width: 3em;
+}
+
 #palette_div {
 	border: 2px solid #000;
 	

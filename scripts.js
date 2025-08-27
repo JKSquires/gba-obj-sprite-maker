@@ -33,6 +33,8 @@ function colorButtonFunc(col_num) {
 		//pal_col_picker.value = "#000000";
 		//pal_col_code.value = "0000";
 
+		pal_col_id.innerHTML = "0x" + col_num.toString(16);
+
 		palette_dialog.showModal();
 	} else {
 		console.log("Use " + col_num);
@@ -47,9 +49,12 @@ function loadPaletteButtons() {
 		col_num = 16;
 	}
 
+	palette_div.innerHTML = "";
+
 	for (let col_index = 0; col_index < col_num; col_index++) {
 		let col_button = document.createElement("button");
 		col_button.id = "col_" + col_index;
+		col_button.className = "pal_col_btn";
 		col_button.innerHTML = "0x" + col_index.toString(16);
 		col_button.onclick = () => colorButtonFunc(col_index);
 		
@@ -57,10 +62,6 @@ function loadPaletteButtons() {
 		
 		palette_div.appendChild(col_button);
 	}
-}
-
-function updateEditPalette() {
-	edit_palette = edit_palette_checkbox.checked;
 }
 
 function btn15bTo24b() {
@@ -78,12 +79,20 @@ function selPalColByPicker() {
 	pal_col_code.value = val.toString(16).padStart(4, "0");
 }
 
+function updateEditPalette() {
+	edit_palette = edit_palette_checkbox.checked;
+}
+
+function updateNumColorPalette() {
+	pal_256 = num_color_checkbox.checked;
+	loadPaletteButtons();
+}
+
 function updatePalColPicker() {
 	let val = col15bToCol24b(parseInt(pal_col_code.value, 16));
 	pal_col_picker.value = '#' + val.toString(16).padStart(6, "0");
 }
 
 updateEditPalette();
+updateNumColorPalette();
 updatePalColPicker();
-
-loadPaletteButtons();
