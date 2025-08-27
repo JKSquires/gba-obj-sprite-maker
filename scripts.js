@@ -48,20 +48,37 @@ function loadPaletteButtons() {
 		col_button.innerHTML = "0x" + col_index.toString(16);
 		col_button.onclick = () => colorButtonFunc(col_index);
 		
-		col_button.dataset.color = "7fff"; // parseInt("7fff", 16);
+		col_button.dataset.color = "7fff";
 		
 		palette_div.appendChild(col_button);
 	}
 }
 
-function toggleEditPalette() {
-	edit_palette = !edit_palette
-
-	if (edit_palette) {
-		palette_mode.innerHTML = "Palette Mode: Edit";
-	} else {
-		palette_mode.innerHTML = "Palette Mode: Use";
-	}
+function updateEditPalette() {
+	edit_palette = edit_palette_checkbox.checked;
 }
+
+function btn15bTo24b() {
+	let val = col15bToCol24b(parseInt(color_conv_box.value, 16));
+	color_conv_box.value = val.toString(16).padStart(6, "0");
+}
+
+function btn24bTo15b() {
+	let val = col24bToCol15b(parseInt(color_conv_box.value, 16));
+	color_conv_box.value = val.toString(16).padStart(4, "0");
+}
+
+function selPalColByPicker() {
+	let val = col24bToCol15b(parseInt(pal_col_picker.value.substring(1), 16));
+	pal_col_code.value = val.toString(16).padStart(4, "0");
+}
+
+function updatePalColPicker() {
+	let val = col15bToCol24b(parseInt(pal_col_code.value, 16));
+	pal_col_picker.value = '#' + val.toString(16).padStart(6, "0");
+}
+
+updateEditPalette();
+updatePalColPicker();
 
 loadPaletteButtons();

@@ -8,14 +8,24 @@
 </head>
 <body>
 <dialog id="palette_dialog">
-	<button onClick="palette_dialog.close();">Close</button>
-	<button onClick="savePaletteDialog();">Save & Close</button>
-</dialog>
-<button onClick="toggleEditPalette();">Toggle Edit Palette</button>
-<p id="palette_mode">Palette Mode: Use</p>
-<div id="palette_div">
+	<h2>Palette Color Editor</h2>
+	
+	<details id="color_code_conv">
+		<summary>Color Code Conversion Tool</summary>
+		<p>0x<textarea id="color_conv_box"></textarea></p>
+		<button onclick="btn24bTo15b();">24-bit to 15-bit color</button>
+		<button onclick="btn15bTo24b();">15-bit to 24-bit color</button>
+	</details>
+	
+	<br>
+	<input type="color" onchange="selPalColByPicker();" id="pal_col_picker"></input>
+	<p>0x<textarea onchange="updatePalColPicker();" id="pal_col_code"></textarea></p>
 
-</div>
+	<button onclick="palette_dialog.close();">Close</button>
+	<button onclick="savePaletteDialog();">Save &amp; Close</button>
+</dialog>
+<input type="checkbox" onchange="updateEditPalette();" id="edit_palette_checkbox">Toggle Edit Palette</input>
+<div id="palette_div"></div>
 
 <script src="./scripts.js"></script>
 </body>
