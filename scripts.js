@@ -28,6 +28,11 @@ function savePaletteDialog() {
 function colorButtonFunc(col_num) {
 	if (edit_palette) {
 		console.log("Edit " + col_num);
+		
+		color_conv_box.value = "";
+		//pal_col_picker.value = "#000000";
+		//pal_col_code.value = "0000";
+
 		palette_dialog.showModal();
 	} else {
 		console.log("Use " + col_num);

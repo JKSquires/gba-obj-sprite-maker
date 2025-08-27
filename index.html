@@ -18,13 +18,16 @@
 	</details>
 	
 	<br>
-	<input type="color" onchange="selPalColByPicker();" id="pal_col_picker"></input>
+	<input type="color" onchange="selPalColByPicker();" id="pal_col_picker">
 	<p>0x<textarea onchange="updatePalColPicker();" id="pal_col_code"></textarea></p>
 
 	<button onclick="palette_dialog.close();">Close</button>
 	<button onclick="savePaletteDialog();">Save &amp; Close</button>
 </dialog>
-<input type="checkbox" onchange="updateEditPalette();" id="edit_palette_checkbox">Toggle Edit Palette</input>
+
+<h1>GBA OBJ Sprite Maker</h1>
+
+<p>Toggle Edit Palette Mode: <input type="checkbox" onchange="updateEditPalette();" id="edit_palette_checkbox"></p>
 <div id="palette_div"></div>
 
 <script src="./scripts.js"></script>
