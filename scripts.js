@@ -1,4 +1,5 @@
 let pal_256 = false;
+let edit_palette = false;
 
 function col15bToCol24b(col_15b) {
 	const scale = 8.22581;
@@ -24,22 +25,42 @@ function savePaletteDialog() {
 	palette_dialog.close();
 }
 
-function loadPaletteButtons() {
-	let color_num;
-	if (pal_256) {
-		color_num = 256;
+function colorButtonFunc(col_num) {
+	if (edit_palette) {
+		console.log("Edit " + col_num);
+		palette_dialog.showModal();
 	} else {
-		color_num = 16;
+		console.log("Use " + col_num);
+	}
+}
+
+function loadPaletteButtons() {
+	let col_num;
+	if (pal_256) {
+		col_num = 256;
+	} else {
+		col_num = 16;
 	}
 
-	for (let col_index = 0; col_index < color_num; col_index++) {
+	for (let col_index = 0; col_index < col_num; col_index++) {
 		let col_button = document.createElement("button");
 		col_button.id = "col_" + col_index;
 		col_button.innerHTML = "0x" + col_index.toString(16);
+		col_button.onclick = () => colorButtonFunc(col_index);
 		
 		col_button.dataset.color = "7fff"; // parseInt("7fff", 16);
 		
 		palette_div.appendChild(col_button);
+	}
+}
+
+function toggleEditPalette() {
+	edit_palette = !edit_palette
+
+	if (edit_palette) {
+		palette_mode.innerHTML = "Palette Mode: Edit";
+	} else {
+		palette_mode.innerHTML = "Palette Mode: Use";
 	}
 }
 
