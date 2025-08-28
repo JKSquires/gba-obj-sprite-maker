@@ -1,3 +1,6 @@
+html * {
+	font-family: "Courier", monospace;
+}
 textarea {
 	height: 1em;
 
@@ -5,10 +8,12 @@ textarea {
 }
 
 .pal_col_btn {
-	width: 3em;
+	width: 4em;
 }
 
 #pal_col_sel {
+	font-weight: bold;
+
 	padding: 2px;
 }
 #palette_div {
