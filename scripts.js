@@ -21,7 +21,24 @@ function col24bToCol15b(col_24b) {
 	return (b << 10) | (g << 5) | r;
 }
 
+function updateColorButtonTextColor(button) {
+	let r = button.dataset.color24b.substring(0,2);
+	let g = button.dataset.color24b.substring(2,4);
+	let b = button.dataset.color24b.substring(4,6);
+	//let g = button.style.backgroundColor.split(',')[1].replace(' ', '');
+	let lum = 0.3 * r + 0.6 * g + 0.1 * b;
+
+	button.style.color = parseInt(lum) < 0x7F ? "#fff" : "#000";
+}
+
 function savePaletteDialog() {
+	let button = document.getElementById("col_" + pal_col_id.innerHTML);
+	let color = pal_col_picker.value.substring(1);
+	button.style.backgroundColor = '#' + color;
+	button.dataset.color15b = col24bToCol15b(parseInt(color, 16)).toString(16).padStart(4, '0');
+	button.dataset.color24b = color;
+	updateColorButtonTextColor(button);
+
 	palette_dialog.close();
 }
 
@@ -29,9 +46,11 @@ function colorButtonFunc(col_num) {
 	if (edit_palette) {
 		console.log("Edit " + col_num);
 		
+		let button = document.getElementById("col_0x" + col_num.toString(16));
+
 		color_conv_box.value = "";
-		//pal_col_picker.value = "#000000";
-		//pal_col_code.value = "0000";
+		pal_col_picker.value = '#' + button.dataset.color24b;
+		pal_col_code.value = button.dataset.color15b;
 
 		pal_col_id.innerHTML = "0x" + col_num.toString(16);
 
@@ -42,41 +61,41 @@ function colorButtonFunc(col_num) {
 }
 
 function loadPaletteButtons() {
-	let col_num;
-	if (pal_256) {
-		col_num = 256;
-	} else {
-		col_num = 16;
-	}
+	let col_num = pal_256 ? 256 : 16;
 
 	palette_div.innerHTML = "";
 
 	for (let col_index = 0; col_index < col_num; col_index++) {
+		let hex_index = "0x" + col_index.toString(16);
 		let col_button = document.createElement("button");
-		col_button.id = "col_" + col_index;
 		col_button.className = "pal_col_btn";
-		col_button.innerHTML = "0x" + col_index.toString(16);
+		col_button.id = "col_" + hex_index;
+		col_button.innerHTML = hex_index;
 		col_button.onclick = () => colorButtonFunc(col_index);
+		col_button.style.backgroundColor = "#000";
 		
-		col_button.dataset.color = "7fff";
+		col_button.dataset.color15b = "0000";
+		col_button.dataset.color24b = "000000";
 		
+		updateColorButtonTextColor(col_button);
+
 		palette_div.appendChild(col_button);
 	}
 }
 
 function btn15bTo24b() {
 	let val = col15bToCol24b(parseInt(color_conv_box.value, 16));
-	color_conv_box.value = val.toString(16).padStart(6, "0");
+	color_conv_box.value = val.toString(16).padStart(6, '0');
 }
 
 function btn24bTo15b() {
 	let val = col24bToCol15b(parseInt(color_conv_box.value, 16));
-	color_conv_box.value = val.toString(16).padStart(4, "0");
+	color_conv_box.value = val.toString(16).padStart(4, '0');
 }
 
 function selPalColByPicker() {
 	let val = col24bToCol15b(parseInt(pal_col_picker.value.substring(1), 16));
-	pal_col_code.value = val.toString(16).padStart(4, "0");
+	pal_col_code.value = val.toString(16).padStart(4, '0');
 }
 
 function updateEditPalette() {
@@ -90,7 +109,7 @@ function updateNumColorPalette() {
 
 function updatePalColPicker() {
 	let val = col15bToCol24b(parseInt(pal_col_code.value, 16));
-	pal_col_picker.value = '#' + val.toString(16).padStart(6, "0");
+	pal_col_picker.value = '#' + val.toString(16).padStart(6, '0');
 }
 
 updateEditPalette();
