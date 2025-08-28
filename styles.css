@@ -8,12 +8,14 @@ textarea {
 	width: 3em;
 }
 
+#pal_col_sel {
+	padding: 2px;
+}
 #palette_div {
 	border: 2px solid #000;
 	
 	padding: 4px;
 }
-
 #color_code_conv {
 	border: 2px solid #000;
 
