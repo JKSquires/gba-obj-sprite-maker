@@ -99,7 +99,7 @@ function loadPaletteButtons() {
 	updatePaletteColorSelection("0x0");
 }
 
-function saveData(selection) { // selections: 0b_1: palette; 0b1_: sprite
+function saveData(selection, file_name) { // selections: 0b_1: palette; 0b1_: sprite
 	let text = "";
 	if (selection & 1) {
 		let palette_data = "";
@@ -115,8 +115,15 @@ function saveData(selection) { // selections: 0b_1: palette; 0b1_: sprite
 	if (selection & 2) {
 		text += getSpriteData();
 	}
+	
+	console.log("Downloading:\n" + text);
 
-	console.log(text);
+	let data_url = "data:application/asm;charset=utf-8," + encodeURIComponent(text);
+	let link = document.createElement("a");
+	link.href = data_url;
+	link.download = file_name;
+
+	link.click();
 }
 
 async function loadPalData() {

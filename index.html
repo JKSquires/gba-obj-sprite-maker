@@ -31,7 +31,7 @@
 
 <h2>Save and Load Data</h2>
 <p>Enter the word directive for your assembler (e.g. .word, DW, @DCW): <textarea id="word_dir"></textarea></p>
-<button onclick="saveData(1);" id="save_pal">Save Palette Data</button>
+<button onclick="saveData(1, pal_name.value + '.asm');" id="save_pal">Save Palette Data</button>
 <br>
 <p>Load Palette Data: <input type="file" onchange="loadPalData();" id="load_pal"></p>
 
