@@ -139,7 +139,7 @@ async function loadPalData() {
 			if (line.length >= pal_name.value.length + 1) {
 				if (line.substring(0, pal_name.value.length + 2) == pal_name.value + ':') {
 					console.log("Found Palette Label");
-					for (let color_line_num = 0; color_line_num < 16 && color_line_num < text.length - line_num; color_line_num++) {
+					for (let color_line_num = 0; color_line_num < pal_col && color_line_num < text.length - line_num; color_line_num++) {
 						line = text[color_line_num + line_num + 1].replace('\r', '');
 						console.log("Parsing line for color: " + line);
 						line = line.split(';')[0];
