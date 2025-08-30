@@ -1,4 +1,4 @@
-let pal_256 = false;
+let pal_col = 16;
 let edit_palette = false;
 
 function col15bToCol24b(col_15b) {
@@ -34,13 +34,13 @@ function updateColorButtonTextColor(button) {
 function updatePaletteColorSelection(col_num) {
 	let button = document.getElementById("col_" + col_num);
 
-	pal_col_sel.innerHTML = col_num;
+	pal_col_sel.innerText = col_num + ": 0x" + button.dataset.color15b;
 	pal_col_sel.style.backgroundColor = '#' + button.dataset.color24b;
 	pal_col_sel.style.color = button.style.color;
 }
 
 function savePaletteDialog() {
-	let col_num = pal_col_id.innerHTML;
+	let col_num = pal_col_id.innerText;
 	let button = document.getElementById("col_" + col_num);
 	let color = pal_col_picker.value.substring(1);
 
@@ -64,7 +64,7 @@ function colorButtonFunc(col_num) {
 		pal_col_picker.value = '#' + button.dataset.color24b;
 		pal_col_code.value = button.dataset.color15b;
 
-		pal_col_id.innerHTML = col_num;
+		pal_col_id.innerText = col_num;
 
 		palette_dialog.showModal();
 	} else {
@@ -75,17 +75,15 @@ function colorButtonFunc(col_num) {
 }
 
 function loadPaletteButtons() {
-	let col_num = pal_256 ? 256 : 16;
-
 	palette_div.innerHTML = "";
 
-	for (let col_index = 0; col_index < col_num; col_index++) {
+	for (let col_index = 0; col_index < pal_col; col_index++) {
 		let hex_index = "0x" + col_index.toString(16);
 		let col_button = document.createElement("button");
 
 		col_button.className = "pal_col_btn";
 		col_button.id = "col_" + hex_index;
-		col_button.innerHTML = hex_index;
+		col_button.innerText = hex_index;
 		col_button.style.backgroundColor = "#000";
 		
 		col_button.dataset.color15b = "0000";
@@ -99,6 +97,72 @@ function loadPaletteButtons() {
 	}
 	
 	updatePaletteColorSelection("0x0");
+}
+
+function saveData(selection) { // selections: 0b_1: palette; 0b1_: sprite
+	let text = "";
+	if (selection & 1) {
+		let palette_data = "";
+
+		text += pal_name.value + ":\n";
+
+		for (let col_num = 0; col_num < pal_col; col_num++) {
+			palette_data += word_dir.value + " 0x" + document.getElementById("col_0x" + col_num.toString(16)).dataset.color15b + '\n';
+		}
+
+		text += palette_data;
+	}
+	if (selection & 2) {
+		text += getSpriteData();
+	}
+
+	console.log(text);
+}
+
+async function loadPalData() {
+	let file = load_pal.files[0];
+
+	if (file) {
+		let text = (await file.text()).split('\n');
+
+		for (let line_num = 0; line_num < text.length; line_num++) {
+			let line = text[line_num].replace('\r', '');
+			console.log("Searching for palette label in line: " + line);
+
+			if (line.length >= pal_name.value.length + 1) {
+				if (line.substring(0, pal_name.value.length + 2) == pal_name.value + ':') {
+					console.log("Found Palette Label");
+					for (let color_line_num = 0; color_line_num < 16 && color_line_num < text.length - line_num; color_line_num++) {
+						line = text[color_line_num + line_num + 1].replace('\r', '');
+						console.log("Parsing line for color: " + line);
+						line = line.split(';')[0];
+
+						if (line.length < word_dir.value.length) {
+							break;
+						}
+						if (line.substring(0, word_dir.value.length) != word_dir.value) {
+							break;
+						}
+
+						let color = line.substring(word_dir.value.length).replace(' ', '').replace('\t', '');
+						color = color.replace("0x", "");
+
+						let button = document.getElementById("col_0x" + color_line_num.toString(16));
+						let button_color = col15bToCol24b(parseInt(color, 16)).toString(16).padStart(6, '0');
+
+						button.dataset.color15b = color;
+						button.dataset.color24b = button_color;
+						button.style.backgroundColor = '#' + button_color;
+
+						updateColorButtonTextColor(button);
+						
+						console.log("Color found: 15b: 0x" + color + "; 24b: 0x" + button_color);
+					}
+					break;
+				}
+			}
+		}
+	}
 }
 
 function btn15bTo24b() {
@@ -121,7 +185,7 @@ function updateEditPalette() {
 }
 
 function updateNumColorPalette() {
-	pal_256 = num_color_checkbox.checked;
+	pal_col = num_color_checkbox.checked ? 256 : 16;
 	loadPaletteButtons();
 }
 

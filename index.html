@@ -27,10 +27,25 @@
 
 <h1>GBA OBJ Sprite Maker</h1>
 
+<hr>
+
+<h2>Save and Load Data</h2>
+<p>Enter the word directive for your assembler (e.g. .word, DW, @DCW): <textarea id="word_dir"></textarea></p>
+<button onclick="saveData(1);" id="save_pal">Save Palette Data</button>
+<br>
+<p>Load Palette Data: <input type="file" onchange="loadPalData();" id="load_pal"></p>
+
+<hr>
+
+<h2>Palette Editor and Selector</h2>
+
+<p>Palette Name/Label: <textarea id="pal_name">palette</textarea></p>
 <p>Toggle 256 Color Palette: <input type="checkbox" onchange="updateNumColorPalette();" id="num_color_checkbox"></p>
 <p>Toggle Edit Palette Mode: <input type="checkbox" onchange="updateEditPalette();" id="edit_palette_checkbox"></p>
 <div id="palette_div"></div>
 <p>Selected Palette Color: <span id="pal_col_sel"></span></p>
+
+<hr>
 
 <script src="./scripts.js"></script>
 </body>

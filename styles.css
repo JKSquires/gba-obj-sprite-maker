@@ -5,6 +5,7 @@ textarea {
 	height: 1em;
 
 	resize: none;
+	overflow: hidden;
 }
 
 .pal_col_btn {
