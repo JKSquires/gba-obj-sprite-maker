@@ -47,6 +47,29 @@
 
 <hr>
 
+<h2>Sprite Editor</h2>
+<p>Select Sprite Size: 
+	<select onchange="updateGridSize();" id="sprite_size">
+		<option>8x8</option>
+		<option>16x16</option>
+		<option>32x32</option>
+		<option>64x64</option>
+		<option>16x8</option>
+		<option>32x8</option>
+		<option>32x16</option>
+		<option>64x32</option>
+		<option>8x16</option>
+		<option>8x32</option>
+		<option>16x32</option>
+		<option>32x64</option>
+	</select>
+</p>
+<p>Editor Scale: <input type="range" min="0" max="11" value="3" onchange="updateSpriteGrid();" id="grid_scale"></p>
+
+<div id="sprite_editor">
+	<table><tbody id="sprite_grid"></tbody></table>
+</div>
+
 <script src="./scripts.js"></script>
 </body>
 </html>

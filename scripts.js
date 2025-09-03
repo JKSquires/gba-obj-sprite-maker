@@ -1,5 +1,6 @@
 let pal_col = 16;
 let edit_palette = false;
+let pixel_grid = null;
 
 function col15bToCol24b(col_15b) {
 	const scale = 8.22581;
@@ -132,13 +133,18 @@ async function loadPalData() {
 	if (file) {
 		let text = (await file.text()).split('\n');
 
+		let found = false;
+
 		for (let line_num = 0; line_num < text.length; line_num++) {
 			let line = text[line_num].replace('\r', '');
-			console.log("Searching for palette label in line: " + line);
+			console.log("Searching for palette `" + pal_name.value + "` label in line: " + line);
 
 			if (line.length >= pal_name.value.length + 1) {
 				if (line.substring(0, pal_name.value.length + 2) == pal_name.value + ':') {
 					console.log("Found Palette Label");
+
+					found = true;
+
 					for (let color_line_num = 0; color_line_num < pal_col && color_line_num < text.length - line_num; color_line_num++) {
 						line = text[color_line_num + line_num + 1].replace('\r', '');
 						console.log("Parsing line for color: " + line);
@@ -169,7 +175,48 @@ async function loadPalData() {
 				}
 			}
 		}
+
+		if (!found) {
+			alert("Could not find palette label `" + pal_name.value + "` in file");
+		}
 	}
+}
+
+function updateSpriteGridColors() {
+
+}
+
+function updateSpritePixel(x, y) {
+	console.log(x, y);
+}
+
+function updateSpriteGrid() {
+	let dim = sprite_size.value.split('x');
+	console.log(dim);
+
+	let scale = 1 + 10 * grid_scale.value;
+
+	let grid = "";
+	for (let row = 0; row < dim[1]; row++) {
+		grid += "<tr>";
+		for (let col = 0; col < dim[0]; col++) {
+			grid += "<td style='width:" + scale + "px;height:" + scale + "px;' " +
+				"title='(" + col + ", " + row + ")' " +
+				"onclick='updateSpritePixel(" + col + ',' + row + ");' " +
+				"id='grid_" + col + ',' + row + "'>" + "</td>";
+		}
+		grid += "</tr>";
+	}
+
+	sprite_grid.innerHTML = grid;
+	
+	updateSpriteGridColors();
+}
+
+function updateGridSize() {
+	//pixel_grid = ;
+
+	updateSpriteGrid();
 }
 
 function btn15bTo24b() {
@@ -204,3 +251,4 @@ function updatePalColPicker() {
 updateEditPalette();
 updateNumColorPalette();
 updatePalColPicker();
+updateGridSize();

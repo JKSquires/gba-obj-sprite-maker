@@ -27,3 +27,16 @@ textarea {
 
 	padding: 4px;
 }
+#sprite_editor {
+	padding: 10px;
+
+	overflow-x: auto;
+}
+#sprite_editor table {
+	width: max-content;
+
+	border-collapse: collapse;
+}
+#sprite_grid td {
+	border: 1px solid #000;
+}
