@@ -34,8 +34,6 @@ textarea {
 }
 #sprite_editor table {
 	width: max-content;
-
-	border-collapse: collapse;
 }
 #sprite_grid td {
 	border: 1px solid #000;

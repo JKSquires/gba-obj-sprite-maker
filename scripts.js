@@ -1,6 +1,8 @@
 let pal_col = 16;
 let edit_palette = false;
-let pixel_grid = null;
+let selected_color = "0";
+let dim;
+let pixel_grid;
 
 function col15bToCol24b(col_15b) {
 	const scale = 8.22581;
@@ -35,6 +37,8 @@ function updateColorButtonTextColor(button) {
 function updatePaletteColorSelection(col_num) {
 	let button = document.getElementById("col_" + col_num);
 
+	selected_color = col_num;
+
 	pal_col_sel.innerText = col_num + ": 0x" + button.dataset.color15b;
 	pal_col_sel.style.backgroundColor = '#' + button.dataset.color24b;
 	pal_col_sel.style.color = button.style.color;
@@ -51,6 +55,8 @@ function savePaletteDialog() {
 	updateColorButtonTextColor(button);
 
 	updatePaletteColorSelection(col_num);
+	
+	updateSpriteGrid();
 
 	palette_dialog.close();
 }
@@ -182,17 +188,18 @@ async function loadPalData() {
 	}
 }
 
-function updateSpriteGridColors() {
-
-}
-
 function updateSpritePixel(x, y) {
 	console.log(x, y);
+
+	pixel_grid[y][x] = selected_color;
+
+	document.getElementById("grid_" + x + ',' + y).style.backgroundColor = '#' + document.getElementById("col_" + pixel_grid[y][x]).dataset.color24b;
 }
 
 function updateSpriteGrid() {
-	let dim = sprite_size.value.split('x');
-	console.log(dim);
+	if (!dim || !pixel_grid) {
+		return;
+	}
 
 	let scale = 1 + 10 * grid_scale.value;
 
@@ -200,7 +207,7 @@ function updateSpriteGrid() {
 	for (let row = 0; row < dim[1]; row++) {
 		grid += "<tr>";
 		for (let col = 0; col < dim[0]; col++) {
-			grid += "<td style='width:" + scale + "px;height:" + scale + "px;' " +
+			grid += "<td style='width:" + scale + "px;height:" + scale + "px;background-color:#" + document.getElementById("col_" + pixel_grid[row][col]).dataset.color24b + ";' " +
 				"title='(" + col + ", " + row + ")' " +
 				"onclick='updateSpritePixel(" + col + ',' + row + ");' " +
 				"id='grid_" + col + ',' + row + "'>" + "</td>";
@@ -209,12 +216,20 @@ function updateSpriteGrid() {
 	}
 
 	sprite_grid.innerHTML = grid;
-	
-	updateSpriteGridColors();
 }
 
 function updateGridSize() {
-	//pixel_grid = ;
+	dim = sprite_size.value.split('x');
+
+	pixel_grid = new Array(dim[1]);
+
+	for (let row = 0; row < dim[1]; row++) {
+		pixel_grid[row] = new Array(dim[0]);
+
+		for (let col = 0; col < dim[0]; col++) {
+			pixel_grid[row][col] = "0x0";
+		}
+	}
 
 	updateSpriteGrid();
 }
