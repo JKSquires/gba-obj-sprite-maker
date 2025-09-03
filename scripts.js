@@ -193,7 +193,10 @@ function updateSpritePixel(x, y) {
 
 	pixel_grid[y][x] = selected_color;
 
-	document.getElementById("grid_" + x + ',' + y).style.backgroundColor = '#' + document.getElementById("col_" + pixel_grid[y][x]).dataset.color24b;
+	let pixel = document.getElementById("grid_" + x + ',' + y);
+	
+	pixel.style.backgroundColor = '#' + document.getElementById("col_" + pixel_grid[y][x]).dataset.color24b;
+	pixel.title = "(" + x + ", " + y + "): " + pixel_grid[y][x];
 }
 
 function updateSpriteGrid() {
@@ -208,7 +211,7 @@ function updateSpriteGrid() {
 		grid += "<tr>";
 		for (let col = 0; col < dim[0]; col++) {
 			grid += "<td style='width:" + scale + "px;height:" + scale + "px;background-color:#" + document.getElementById("col_" + pixel_grid[row][col]).dataset.color24b + ";' " +
-				"title='(" + col + ", " + row + ")' " +
+				"title='(" + col + ", " + row + "): 0x0' " +
 				"onclick='updateSpritePixel(" + col + ',' + row + ");' " +
 				"id='grid_" + col + ',' + row + "'>" + "</td>";
 		}
