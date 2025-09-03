@@ -120,7 +120,27 @@ function saveData(selection, file_name) { // selections: 0b_1: palette; 0b1_: sp
 		text += palette_data;
 	}
 	if (selection & 2) {
-		text += getSpriteData();
+		let sprite_data = "";
+
+		text += sprite_name.value + ":\n";
+
+		for (let row_sec = 0; row_sec < dim[1]; row_sec += 8) {
+			for (let col_sec = 0; col_sec < dim[0]; col_sec += 8) {
+				for (let row = row_sec; row < row_sec + 8; row++) {
+					sprite_data += word_dir.value + " 0x" +
+						pixel_grid[row][col_sec + 3].substring(2) +
+						pixel_grid[row][col_sec + 2].substring(2) +
+						pixel_grid[row][col_sec + 1].substring(2) +
+						pixel_grid[row][col_sec].substring(2) + ", 0x" +
+						pixel_grid[row][col_sec + 7].substring(2) +
+						pixel_grid[row][col_sec + 6].substring(2) +
+						pixel_grid[row][col_sec + 5].substring(2) +
+						pixel_grid[row][col_sec + 4].substring(2) + '\n';
+				}
+			}
+		}
+
+		text += sprite_data;
 	}
 	
 	console.log("Downloading:\n" + text);
