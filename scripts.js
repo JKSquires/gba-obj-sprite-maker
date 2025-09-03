@@ -234,6 +234,13 @@ function updateGridSize() {
 	updateSpriteGrid();
 }
 
+function updateNumColorPalette() {
+	pal_col = num_color_checkbox.checked ? 256 : 16;
+
+	loadPaletteButtons();
+	updateGridSize();
+}
+
 function btn15bTo24b() {
 	let val = col15bToCol24b(parseInt(color_conv_box.value, 16));
 	color_conv_box.value = val.toString(16).padStart(6, '0');
@@ -253,11 +260,6 @@ function updateEditPalette() {
 	edit_palette = edit_palette_checkbox.checked;
 }
 
-function updateNumColorPalette() {
-	pal_col = num_color_checkbox.checked ? 256 : 16;
-	loadPaletteButtons();
-}
-
 function updatePalColPicker() {
 	let val = col15bToCol24b(parseInt(pal_col_code.value, 16));
 	pal_col_picker.value = '#' + val.toString(16).padStart(6, '0');
@@ -266,4 +268,3 @@ function updatePalColPicker() {
 updateEditPalette();
 updateNumColorPalette();
 updatePalColPicker();
-updateGridSize();
