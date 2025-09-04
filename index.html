@@ -31,8 +31,10 @@
 
 <h2>Save and Load Data</h2>
 <p>When saving and loading data, first make sure all the settings are correct.</p>
-<p>Enter the word directive for your assembler (e.g. .word, DW, @DCW): <textarea id="word_dir"></textarea></p>
+<p>Enter the halfword/16-bit constant directive for your assembler (e.g. .hword, DW, @DCW): <textarea id="word_dir"></textarea></p>
 <p>Load Palette Data: <input type="file" onchange="loadPalData();" id="load_pal"></p>
+<p>Load Sprite Data: <input type="file" onchange="loadSpriteData();" id="load_sprite"></p>
+
 <button onclick="saveData(1, pal_name.value + '.asm');" id="save_pal">Save Palette Data</button>
 <button onclick="saveData(2, sprite_name.value + '.asm');" id="save_sprite">Save Sprite Data</button>
 <button onclick="saveData(3, pal_name.value + '_' + sprite_name.value + '.asm');" id="save_pal_sprite">Save Palette and Sprite Data</button>
