@@ -203,6 +203,8 @@ async function loadPalData() {
 			}
 		}
 
+		updateSpriteGrid();
+
 		if (!found) {
 			alert("Could not find palette label `" + pal_name.value + "` in file");
 		}
@@ -228,6 +230,7 @@ async function loadSpriteData() {
 					found = true;
 
 					let sections = dim[0] * dim[1] / 8;
+					let write_section = [0, 0];
 
 					for (let pixel_line_num = 0; pixel_line_num < sections && pixel_line_num < text.length - line_num; pixel_line_num++) {
 						// see comment in loadPalData() in similar location
@@ -245,12 +248,31 @@ async function loadSpriteData() {
 						let row_data = line.replaceAll(' ', '').replaceAll('\t', '').replaceAll(',', '').split("0x");
 						
 						let ordered_row_pixel_data = row_data[2] + row_data[1]
+
 						console.log("Pixel data found: 0x" + ordered_row_pixel_data);
+
+						for (let nibble_index = 0; nibble_index < 8; nibble_index++) {
+							pixel_grid[write_section[1]][write_section[0] + nibble_index] = "0x" + ordered_row_pixel_data.charAt(7 - nibble_index);
+
+							//updateSpritePixel(write_section[0] + nibble_index, write_section[1]);
+						}
+						
+						write_section[1]++;
+						if (write_section[1] % 8 == 0) {
+							if (write_section[0] + 8 - dim[0] >= 0) {
+								write_section[0] = 0;
+							} else {
+								write_section[0] += 8;
+								write_section[1] -= 8;
+							}
+						}
 					}
 					break;
 				}
 			}
 		}
+
+		updateSpriteGrid();
 
 		if (!found) {
 			alert("Could not find sprite label `" + sprite_name.value + "` in file");
@@ -259,8 +281,6 @@ async function loadSpriteData() {
 }
 
 function updateSpritePixel(x, y) {
-	console.log(x, y);
-
 	pixel_grid[y][x] = selected_color;
 
 	let pixel = document.getElementById("grid_" + x + ',' + y);
@@ -281,7 +301,7 @@ function updateSpriteGrid() {
 		grid += "<tr>";
 		for (let col = 0; col < dim[0]; col++) {
 			grid += "<td style='width:" + scale + "px;height:" + scale + "px;background-color:#" + document.getElementById("col_" + pixel_grid[row][col]).dataset.color24b + ";' " +
-				"title='(" + col + ", " + row + "): 0x0' " +
+				"title='(" + col + ", " + row + "): " + pixel_grid[row][col] + "' " +
 				"onclick='updateSpritePixel(" + col + ',' + row + ");' " +
 				"id='grid_" + col + ',' + row + "'>" + "</td>";
 		}
