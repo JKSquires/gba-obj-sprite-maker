@@ -172,6 +172,7 @@ async function loadPalData() {
 					found = true;
 
 					for (let color_line_num = 0; color_line_num < pal_col && color_line_num < text.length - line_num; color_line_num++) {
+						// if there are random new lines or comment lines, or really anything other than palette data, this logic doesn't work with the data well. `color_line_num < pal_col` too.
 						line = text[color_line_num + line_num + 1].replace('\r', '');
 						console.log("Parsing line for color: " + line);
 						line = line.split(';')[0];
@@ -204,6 +205,55 @@ async function loadPalData() {
 
 		if (!found) {
 			alert("Could not find palette label `" + pal_name.value + "` in file");
+		}
+	}
+}
+
+async function loadSpriteData() {
+	let file = load_sprite.files[0];
+
+	if (file) {
+		let text = (await file.text()).split('\n');
+
+		let found = false;
+
+		for (let line_num = 0; line_num < text.length; line_num++) {
+			let line = text[line_num].replace('\r', '');
+			console.log("Searching for sprite `" + sprite_name.value + "` label in line: " + line);
+
+			if (line.length >= sprite_name.value.length + 1) {
+				if (line.substring(0, pal_name.value.length + 2) == sprite_name.value + ':') {
+					console.log("Found Sprite Label");
+
+					found = true;
+
+					let sections = dim[0] * dim[1] / 8;
+
+					for (let pixel_line_num = 0; pixel_line_num < sections && pixel_line_num < text.length - line_num; pixel_line_num++) {
+						// see comment in loadPalData() in similar location
+						line = text[pixel_line_num + line_num + 1].replace('\r', '');
+						console.log("Parsing line for pixel data: " + line);
+						line = line.split(';')[0];
+
+						if (line.length < word_dir.value.length) {
+							break;
+						}
+						if (line.substring(0, word_dir.value.length) != word_dir.value) {
+							break;
+						}
+
+						let row_data = line.replace(' ', '').replace('\t', '').split("0x");
+						
+						let ordered_row_pixel_data = row_data[2] + row_data[1]
+						console.log("Pixel data found: 0x" + ordered_row_pixel_data);
+					}
+					break;
+				}
+			}
+		}
+
+		if (!found) {
+			alert("Could not find sprite label `" + sprite_name.value + "` in file");
 		}
 	}
 }
