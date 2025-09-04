@@ -171,32 +171,30 @@ async function loadPalData() {
 
 					found = true;
 
-					for (let color_line_num = 0; color_line_num < pal_col && color_line_num < text.length - line_num; color_line_num++) {
-						// if there are random new lines or comment lines, or really anything other than palette data, this logic doesn't work with the data well. `color_line_num < pal_col` too.
+					let color_lines = 0;
+
+					for (let color_line_num = 0; color_lines < pal_col && color_line_num < text.length - line_num; color_line_num++) {
 						line = text[color_line_num + line_num + 1].replaceAll('\r', '');
 						console.log("Parsing line for color: " + line);
 						line = line.split(';')[0];
 
-						if (line.length < word_dir.value.length) {
-							break;
+						if (line.length > word_dir.value.length && line.substring(0, word_dir.value.length) == word_dir.value) {
+							let color = line.substring(word_dir.value.length).replaceAll(' ', '').replaceAll('\t', '');
+							color = color.replaceAll("0x", "");
+
+							let button = document.getElementById("col_0x" + color_lines.toString(16));
+							let button_color = col15bToCol24b(parseInt(color, 16)).toString(16).padStart(6, '0');
+
+							button.dataset.color15b = color;
+							button.dataset.color24b = button_color;
+							button.style.backgroundColor = '#' + button_color;
+
+							updateColorButtonTextColor(button);
+							
+							console.log("Color found: 15b: 0x" + color + "; 24b: 0x" + button_color);
+
+							color_lines++;
 						}
-						if (line.substring(0, word_dir.value.length) != word_dir.value) {
-							break;
-						}
-
-						let color = line.substring(word_dir.value.length).replaceAll(' ', '').replaceAll('\t', '');
-						color = color.replaceAll("0x", "");
-
-						let button = document.getElementById("col_0x" + color_line_num.toString(16));
-						let button_color = col15bToCol24b(parseInt(color, 16)).toString(16).padStart(6, '0');
-
-						button.dataset.color15b = color;
-						button.dataset.color24b = button_color;
-						button.style.backgroundColor = '#' + button_color;
-
-						updateColorButtonTextColor(button);
-						
-						console.log("Color found: 15b: 0x" + color + "; 24b: 0x" + button_color);
 					}
 					break;
 				}
@@ -232,38 +230,34 @@ async function loadSpriteData() {
 					let sections = dim[0] * dim[1] / 8;
 					let write_section = [0, 0];
 
-					for (let pixel_line_num = 0; pixel_line_num < sections && pixel_line_num < text.length - line_num; pixel_line_num++) {
-						// see comment in loadPalData() in similar location
+					let pixel_lines = 0;
+
+					for (let pixel_line_num = 0; pixel_lines < sections && pixel_line_num < text.length - line_num; pixel_line_num++) {
 						line = text[pixel_line_num + line_num + 1].replaceAll('\r', '');
 						console.log("Parsing line for pixel data: " + line);
 						line = line.split(';')[0];
 
-						if (line.length < word_dir.value.length) {
-							break;
-						}
-						if (line.substring(0, word_dir.value.length) != word_dir.value) {
-							break;
-						}
+						if (line.length > word_dir.value.length && line.substring(0, word_dir.value.length) == word_dir.value) {
+							pixel_lines++;
 
-						let row_data = line.replaceAll(' ', '').replaceAll('\t', '').replaceAll(',', '').split("0x");
-						
-						let ordered_row_pixel_data = row_data[2] + row_data[1]
+							let row_data = line.replaceAll(' ', '').replaceAll('\t', '').replaceAll(',', '').split("0x");
+							
+							let ordered_row_pixel_data = row_data[2] + row_data[1]
 
-						console.log("Pixel data found: 0x" + ordered_row_pixel_data);
+							console.log("Pixel data found: 0x" + ordered_row_pixel_data);
 
-						for (let nibble_index = 0; nibble_index < 8; nibble_index++) {
-							pixel_grid[write_section[1]][write_section[0] + nibble_index] = "0x" + ordered_row_pixel_data.charAt(7 - nibble_index);
-
-							//updateSpritePixel(write_section[0] + nibble_index, write_section[1]);
-						}
-						
-						write_section[1]++;
-						if (write_section[1] % 8 == 0) {
-							if (write_section[0] + 8 - dim[0] >= 0) {
-								write_section[0] = 0;
-							} else {
-								write_section[0] += 8;
-								write_section[1] -= 8;
+							for (let nibble_index = 0; nibble_index < 8; nibble_index++) {
+								pixel_grid[write_section[1]][write_section[0] + nibble_index] = "0x" + ordered_row_pixel_data.charAt(7 - nibble_index);
+							}
+							
+							write_section[1]++;
+							if (write_section[1] % 8 == 0) {
+								if (write_section[0] + 8 - dim[0] >= 0) {
+									write_section[0] = 0;
+								} else {
+									write_section[0] += 8;
+									write_section[1] -= 8;
+								}
 							}
 						}
 					}
