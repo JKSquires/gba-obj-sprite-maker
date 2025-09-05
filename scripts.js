@@ -202,7 +202,6 @@ async function loadPalData() {
 			}
 		}
 
-		console.log("grid");
 		updateSpriteGrid();
 
 		if (!found) {
@@ -234,7 +233,7 @@ async function loadSpriteData() {
 
 					let pixel_lines = 0;
 
-					for (let pixel_line_num = 0; pixel_lines < sections && pixel_line_num < text.length - line_num + 1; pixel_line_num++) {
+					for (let pixel_line_num = 0; pixel_lines < sections && pixel_line_num < text.length - line_num - 1; pixel_line_num++) {
 						line = text[pixel_line_num + line_num + 1];
 						console.log("Parsing line for pixel data: " + line);
 						line = line.split(';')[0];
