@@ -157,12 +157,12 @@ async function loadPalData() {
 	let file = load_pal.files[0];
 
 	if (file) {
-		let text = (await file.text()).split('\n');
+		let text = (await file.text()).replaceAll(":", ":\n").replaceAll('\t', '').replaceAll(' ', '').replaceAll('\r', '').split('\n');
 
 		let found = false;
 
 		for (let line_num = 0; line_num < text.length; line_num++) {
-			let line = text[line_num].replaceAll('\r', '');
+			let line = text[line_num];
 			console.log("Searching for palette `" + pal_name.value + "` label in line: " + line);
 
 			if (line.length >= pal_name.value.length + 1) {
@@ -174,12 +174,12 @@ async function loadPalData() {
 					let color_lines = 0;
 
 					for (let color_line_num = 0; color_lines < pal_col && color_line_num < text.length - line_num; color_line_num++) {
-						line = text[color_line_num + line_num + 1].replaceAll('\r', '');
+						line = text[color_line_num + line_num + 1];
 						console.log("Parsing line for color: " + line);
 						line = line.split(';')[0];
 
 						if (line.length > word_dir.value.length && line.substring(0, word_dir.value.length) == word_dir.value) {
-							let color = line.substring(word_dir.value.length).replaceAll(' ', '').replaceAll('\t', '');
+							let color = line.substring(word_dir.value.length);
 							color = color.replaceAll("0x", "");
 
 							let button = document.getElementById("col_0x" + color_lines.toString(16));
@@ -213,12 +213,12 @@ async function loadSpriteData() {
 	let file = load_sprite.files[0];
 
 	if (file) {
-		let text = (await file.text()).split('\n');
+		let text = (await file.text()).replaceAll(":", ":\n").replaceAll('\t', '').replaceAll(' ', '').replaceAll('\r', '').replaceAll(',', '').split('\n');
 
 		let found = false;
 
 		for (let line_num = 0; line_num < text.length; line_num++) {
-			let line = text[line_num].replaceAll('\r', '');
+			let line = text[line_num];
 			console.log("Searching for sprite `" + sprite_name.value + "` label in line: " + line);
 
 			if (line.length >= sprite_name.value.length + 1) {
@@ -233,14 +233,14 @@ async function loadSpriteData() {
 					let pixel_lines = 0;
 
 					for (let pixel_line_num = 0; pixel_lines < sections && pixel_line_num < text.length - line_num; pixel_line_num++) {
-						line = text[pixel_line_num + line_num + 1].replaceAll('\r', '');
+						line = text[pixel_line_num + line_num + 1];
 						console.log("Parsing line for pixel data: " + line);
 						line = line.split(';')[0];
 
 						if (line.length > word_dir.value.length && line.substring(0, word_dir.value.length) == word_dir.value) {
 							pixel_lines++;
 
-							let row_data = line.replaceAll(' ', '').replaceAll('\t', '').replaceAll(',', '').split("0x");
+							let row_data = line.split("0x");
 							
 							let ordered_row_pixel_data = row_data[2] + row_data[1]
 
