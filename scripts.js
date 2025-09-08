@@ -1,5 +1,6 @@
 let pal_col = 16;
 let edit_palette = false;
+let use_word = false;
 let selected_color = "0";
 let dim;
 let pixel_grid;
@@ -114,7 +115,7 @@ function saveData(selection, file_name) { // selections: 0b_1: palette; 0b1_: sp
 		text += pal_name.value + ":\n";
 
 		for (let col_num = 0; col_num < pal_col; col_num++) {
-			palette_data += word_dir.value + " 0x" + document.getElementById("col_0x" + col_num.toString(16)).dataset.color15b + '\n';
+			palette_data += halfword_dir.value + " 0x" + document.getElementById("col_0x" + col_num.toString(16)).dataset.color15b + '\n';
 		}
 
 		text += palette_data;
@@ -127,7 +128,7 @@ function saveData(selection, file_name) { // selections: 0b_1: palette; 0b1_: sp
 		for (let row_sec = 0; row_sec < dim[1]; row_sec += 8) {
 			for (let col_sec = 0; col_sec < dim[0]; col_sec += 8) {
 				for (let row = row_sec; row < row_sec + 8; row++) {
-					sprite_data += word_dir.value + " 0x" +
+					sprite_data += halfword_dir.value + " 0x" +
 						pixel_grid[row][col_sec + 3].substring(2) +
 						pixel_grid[row][col_sec + 2].substring(2) +
 						pixel_grid[row][col_sec + 1].substring(2) +
@@ -178,8 +179,8 @@ async function loadPalData() {
 						console.log("Parsing line for color: " + line);
 						line = line.split(';')[0];
 
-						if (line.length > word_dir.value.length && line.substring(0, word_dir.value.length) == word_dir.value) {
-							let color = line.substring(word_dir.value.length);
+						if (line.length > halfword_dir.value.length && line.substring(0, halfword_dir.value.length) == halfword_dir.value) {
+							let color = line.substring(halfword_dir.value.length);
 							color = color.replaceAll("0x", "");
 
 							let button = document.getElementById("col_0x" + color_lines.toString(16));
@@ -238,7 +239,7 @@ async function loadSpriteData() {
 						console.log("Parsing line for pixel data: " + line);
 						line = line.split(';')[0];
 
-						if (line.length > word_dir.value.length && line.substring(0, word_dir.value.length) == word_dir.value) {
+						if (line.length > halfword_dir.value.length && line.substring(0, halfword_dir.value.length) == halfword_dir.value) {
 							pixel_lines++;
 
 							let row_data = line.split("0x");
@@ -351,6 +352,12 @@ function updateEditPalette() {
 function updatePalColPicker() {
 	let val = col15bToCol24b(parseInt(pal_col_code.value, 16));
 	pal_col_picker.value = '#' + val.toString(16).padStart(6, '0');
+}
+
+function updateSpriteDataFormat() {
+	use_word = use_word_checkbox.checked;
+
+	word_dir_area.style.display = use_word ? "block" : "none";
 }
 
 updateEditPalette();
