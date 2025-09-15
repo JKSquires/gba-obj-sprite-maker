@@ -128,7 +128,17 @@ function saveData(selection, file_name) { // selections: 0b_1: palette; 0b1_: sp
 		for (let row_sec = 0; row_sec < dim[1]; row_sec += 8) {
 			for (let col_sec = 0; col_sec < dim[0]; col_sec += 8) {
 				for (let row = row_sec; row < row_sec + 8; row++) {
-					sprite_data += halfword_dir.value + " 0x" +
+					sprite_data += use_word ? 
+						word_dir.value + " 0x" +
+						pixel_grid[row][col_sec + 7].substring(2) +
+						pixel_grid[row][col_sec + 6].substring(2) +
+						pixel_grid[row][col_sec + 5].substring(2) +
+						pixel_grid[row][col_sec + 4].substring(2) +
+						pixel_grid[row][col_sec + 3].substring(2) +
+						pixel_grid[row][col_sec + 2].substring(2) +
+						pixel_grid[row][col_sec + 1].substring(2) +
+						pixel_grid[row][col_sec].substring(2) + '\n'
+						: halfword_dir.value + " 0x" +
 						pixel_grid[row][col_sec + 3].substring(2) +
 						pixel_grid[row][col_sec + 2].substring(2) +
 						pixel_grid[row][col_sec + 1].substring(2) +
