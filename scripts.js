@@ -164,7 +164,29 @@ function saveData(selection, file_name) { // selections: 0b_1: palette; 0b1_: sp
 	link.click();
 }
 
+function checkHalfwordDirective() {
+	if (halfword_dir.value == "") {
+		alert("Halfword Directive is empty!");
+
+		return false;
+	}
+
+	return true;
+}
+
+function checkWordDirective() {
+	if (word_dir.value == "") {
+		alert("Word Directive is empty!");
+
+		return false;
+	}
+
+	return true;
+}
+
 async function loadPalData() {
+	checkHalfwordDirective();
+
 	let file = load_pal.files[0];
 
 	if (file) {
@@ -222,6 +244,12 @@ async function loadPalData() {
 }
 
 async function loadSpriteData() {
+	if (use_word) {
+		checkWordDirective();
+	} else {
+		checkHalfwordDirective();
+	}
+
 	let file = load_sprite.files[0];
 
 	if (file) {
@@ -250,13 +278,11 @@ async function loadSpriteData() {
 						line = line.split(';')[0];
 
 						if (use_word) {
-							if (line.length > word_dir.value.length && line.substring(0, word_dir.value.length) == word_dir.value) {
+							if (word_dir.value != "" && line.length > word_dir.value.length && line.substring(0, word_dir.value.length) == word_dir.value) {
 								pixel_lines++;
 
 								let pixel_data = line.split("0x")[1];
 								
-								//let ordered_row_pixel_data = row_data[2] + row_data[1]
-
 								console.log("Pixel data found: 0x" + pixel_data);
 
 								for (let nibble_index = 0; nibble_index < 8; nibble_index++) {
@@ -274,7 +300,7 @@ async function loadSpriteData() {
 								}
 							}
 						} else {
-							if (line.length > halfword_dir.value.length && line.substring(0, halfword_dir.value.length) == halfword_dir.value) {
+							if (halfword_dir.value != "" && line.length > halfword_dir.value.length && line.substring(0, halfword_dir.value.length) == halfword_dir.value) {
 								pixel_lines++;
 
 								let row_data = line.split("0x");
