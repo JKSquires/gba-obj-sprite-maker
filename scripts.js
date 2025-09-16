@@ -249,26 +249,52 @@ async function loadSpriteData() {
 						console.log("Parsing line for pixel data: " + line);
 						line = line.split(';')[0];
 
-						if (line.length > halfword_dir.value.length && line.substring(0, halfword_dir.value.length) == halfword_dir.value) {
-							pixel_lines++;
+						if (use_word) {
+							if (line.length > word_dir.value.length && line.substring(0, word_dir.value.length) == word_dir.value) {
+								pixel_lines++;
 
-							let row_data = line.split("0x");
-							
-							let ordered_row_pixel_data = row_data[2] + row_data[1]
+								let pixel_data = line.split("0x")[1];
+								
+								//let ordered_row_pixel_data = row_data[2] + row_data[1]
 
-							console.log("Pixel data found: 0x" + ordered_row_pixel_data);
+								console.log("Pixel data found: 0x" + pixel_data);
 
-							for (let nibble_index = 0; nibble_index < 8; nibble_index++) {
-								pixel_grid[write_section[1]][write_section[0] + nibble_index] = "0x" + ordered_row_pixel_data.charAt(7 - nibble_index);
+								for (let nibble_index = 0; nibble_index < 8; nibble_index++) {
+									pixel_grid[write_section[1]][write_section[0] + nibble_index] = "0x" + pixel_data.charAt(7 - nibble_index);
+								}
+								
+								write_section[1]++;
+								if (write_section[1] % 8 == 0) {
+									if (write_section[0] + 8 - dim[0] >= 0) {
+										write_section[0] = 0;
+									} else {
+										write_section[0] += 8;
+										write_section[1] -= 8;
+									}
+								}
 							}
-							
-							write_section[1]++;
-							if (write_section[1] % 8 == 0) {
-								if (write_section[0] + 8 - dim[0] >= 0) {
-									write_section[0] = 0;
-								} else {
-									write_section[0] += 8;
-									write_section[1] -= 8;
+						} else {
+							if (line.length > halfword_dir.value.length && line.substring(0, halfword_dir.value.length) == halfword_dir.value) {
+								pixel_lines++;
+
+								let row_data = line.split("0x");
+								
+								let ordered_row_pixel_data = row_data[2] + row_data[1]
+
+								console.log("Pixel data found: 0x" + ordered_row_pixel_data);
+
+								for (let nibble_index = 0; nibble_index < 8; nibble_index++) {
+									pixel_grid[write_section[1]][write_section[0] + nibble_index] = "0x" + ordered_row_pixel_data.charAt(7 - nibble_index);
+								}
+								
+								write_section[1]++;
+								if (write_section[1] % 8 == 0) {
+									if (write_section[0] + 8 - dim[0] >= 0) {
+										write_section[0] = 0;
+									} else {
+										write_section[0] += 8;
+										write_section[1] -= 8;
+									}
 								}
 							}
 						}
