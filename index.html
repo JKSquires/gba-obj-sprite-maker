@@ -31,7 +31,10 @@
 
 <h2>Save and Load Data</h2>
 <p>When saving and loading data, first make sure all the settings are correct.</p>
-<p>Enter the halfword/16-bit constant directive for your assembler (e.g. .half, DW, @DCW): <textarea id="word_dir"></textarea></p>
+<p>Enter the halfword/16-bit constant directive for your assembler (e.g. .half, DW, @DCW): <textarea id="halfword_dir"></textarea></p>
+<p>Use words instead of halfwords for sprite data: <input type="checkbox" onchange="updateSpriteDataFormat()" id="use_word_checkbox"></p>
+<p style="display:none;" id="word_dir_area">Enter the word/32-bit constant directive for your assembler (e.g. .word, DD, @DCD): <textarea id="word_dir"></textarea></p>
+
 <p>Load Palette Data: <input type="file" onchange="loadPalData();" id="load_pal"></p>
 <p>Load Sprite Data: <input type="file" onchange="loadSpriteData();" id="load_sprite"></p>
 
