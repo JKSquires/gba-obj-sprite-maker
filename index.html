@@ -7,24 +7,6 @@
 <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
-<dialog id="palette_dialog">
-	<h2>Palette Color Editor</h2>
-	
-	<details id="color_code_conv">
-		<summary>Color Code Conversion Tool</summary>
-		<p>0x<textarea id="color_conv_box"></textarea></p>
-		<button onclick="btn24bTo15b();">24-bit to 15-bit color</button>
-		<button onclick="btn15bTo24b();">15-bit to 24-bit color</button>
-	</details>
-	
-	<p>Palette color id: <strong id="pal_col_id"></strong></p>
-	<input type="color" onchange="selPalColByPicker();" id="pal_col_picker">
-	<p>0x<textarea onchange="updatePalColPicker();" id="pal_col_code"></textarea></p>
-
-	<button onclick="palette_dialog.close();">Close</button>
-	<button onclick="savePaletteDialog();">Save &amp; Close</button>
-</dialog>
-
 <h1>GBA OBJ Sprite Maker</h1>
 
 <hr>
@@ -34,6 +16,13 @@
 <p>Enter the halfword/16-bit constant directive for your assembler (e.g. .half, DW, @DCW): <textarea id="halfword_dir"></textarea></p>
 <p>Use words instead of halfwords for sprite data: <input type="checkbox" onchange="updateSpriteDataFormat()" id="use_word_checkbox"></p>
 <p style="display:none;" id="word_dir_area">Enter the word/32-bit constant directive for your assembler (e.g. .word, DD, @DCD): <textarea id="word_dir"></textarea></p>
+
+<p>Select the hexadecimal prefix for saving and loading: 
+	<select id="hex_prefix">
+		<option>0x</option>
+		<option>$</option>
+	</select>
+</p>
 
 <p>Load Palette Data: <input type="file" onchange="loadPalData();" id="load_pal"></p>
 <p>Load Sprite Data: <input type="file" onchange="loadSpriteData();" id="load_sprite"></p>
@@ -78,6 +67,24 @@
 <div id="sprite_editor">
 	<table><tbody id="sprite_grid"></tbody></table>
 </div>
+
+<dialog id="palette_dialog">
+	<h2>Palette Color Editor</h2>
+	
+	<details id="color_code_conv">
+		<summary>Color Code Conversion Tool</summary>
+		<p>0x<textarea id="color_conv_box"></textarea></p>
+		<button onclick="btn24bTo15b();">24-bit to 15-bit color</button>
+		<button onclick="btn15bTo24b();">15-bit to 24-bit color</button>
+	</details>
+	
+	<p>Palette color id: <strong id="pal_col_id"></strong></p>
+	<input type="color" onchange="selPalColByPicker();" id="pal_col_picker">
+	<p>0x<textarea onchange="updatePalColPicker();" id="pal_col_code"></textarea></p>
+
+	<button onclick="palette_dialog.close();">Close</button>
+	<button onclick="savePaletteDialog();">Save &amp; Close</button>
+</dialog>
 
 <script src="./scripts.js"></script>
 </body>

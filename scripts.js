@@ -115,7 +115,7 @@ function saveData(selection, file_name) { // selections: 0b_1: palette; 0b1_: sp
 		text += pal_name.value + ":\n";
 
 		for (let col_num = 0; col_num < pal_col; col_num++) {
-			palette_data += halfword_dir.value + " 0x" + document.getElementById("col_0x" + col_num.toString(16)).dataset.color15b + '\n';
+			palette_data += halfword_dir.value + ' ' + hex_prefix.value + document.getElementById("col_0x" + col_num.toString(16)).dataset.color15b + '\n';
 		}
 
 		text += palette_data;
@@ -129,7 +129,7 @@ function saveData(selection, file_name) { // selections: 0b_1: palette; 0b1_: sp
 			for (let col_sec = 0; col_sec < dim[0]; col_sec += 8) {
 				for (let row = row_sec; row < row_sec + 8; row++) {
 					sprite_data += use_word ? 
-						word_dir.value + " 0x" +
+						word_dir.value + " " + hex_prefix.value +
 						pixel_grid[row][col_sec + 7].substring(2) +
 						pixel_grid[row][col_sec + 6].substring(2) +
 						pixel_grid[row][col_sec + 5].substring(2) +
@@ -138,11 +138,11 @@ function saveData(selection, file_name) { // selections: 0b_1: palette; 0b1_: sp
 						pixel_grid[row][col_sec + 2].substring(2) +
 						pixel_grid[row][col_sec + 1].substring(2) +
 						pixel_grid[row][col_sec].substring(2) + '\n'
-						: halfword_dir.value + " 0x" +
+						: halfword_dir.value + " " + hex_prefix.value +
 						pixel_grid[row][col_sec + 3].substring(2) +
 						pixel_grid[row][col_sec + 2].substring(2) +
 						pixel_grid[row][col_sec + 1].substring(2) +
-						pixel_grid[row][col_sec].substring(2) + ", 0x" +
+						pixel_grid[row][col_sec].substring(2) + ", " + hex_prefix.value +
 						pixel_grid[row][col_sec + 7].substring(2) +
 						pixel_grid[row][col_sec + 6].substring(2) +
 						pixel_grid[row][col_sec + 5].substring(2) +
@@ -213,7 +213,7 @@ async function loadPalData() {
 
 						if (line.length > halfword_dir.value.length && line.substring(0, halfword_dir.value.length) == halfword_dir.value) {
 							let color = line.substring(halfword_dir.value.length);
-							color = color.replaceAll("0x", "");
+							color = color.replaceAll(hex_prefix.value, "");
 
 							let button = document.getElementById("col_0x" + color_lines.toString(16));
 							let button_color = col15bToCol24b(parseInt(color, 16)).toString(16).padStart(6, '0');
@@ -224,7 +224,7 @@ async function loadPalData() {
 
 							updateColorButtonTextColor(button);
 							
-							console.log("Color found: 15b: 0x" + color + "; 24b: 0x" + button_color);
+							console.log("Color found: 15b: " + hex_prefix.value + color + "; 24b: " + hex_prefix.value + button_color);
 
 							color_lines++;
 							console.log(color_lines, pal_col);
@@ -281,9 +281,9 @@ async function loadSpriteData() {
 							if (word_dir.value != "" && line.length > word_dir.value.length && line.substring(0, word_dir.value.length) == word_dir.value) {
 								pixel_lines++;
 
-								let pixel_data = line.split("0x")[1];
+								let pixel_data = line.split(hex_prefix.value)[1];
 								
-								console.log("Pixel data found: 0x" + pixel_data);
+								console.log("Pixel data found: " + hex_prefix.value + pixel_data);
 
 								for (let nibble_index = 0; nibble_index < 8; nibble_index++) {
 									pixel_grid[write_section[1]][write_section[0] + nibble_index] = "0x" + pixel_data.charAt(7 - nibble_index);
@@ -303,11 +303,11 @@ async function loadSpriteData() {
 							if (halfword_dir.value != "" && line.length > halfword_dir.value.length && line.substring(0, halfword_dir.value.length) == halfword_dir.value) {
 								pixel_lines++;
 
-								let row_data = line.split("0x");
+								let row_data = line.split(hex_prefix.value);
 								
 								let ordered_row_pixel_data = row_data[2] + row_data[1]
 
-								console.log("Pixel data found: 0x" + ordered_row_pixel_data);
+								console.log("Pixel data found: " + hex_prefix.value + ordered_row_pixel_data);
 
 								for (let nibble_index = 0; nibble_index < 8; nibble_index++) {
 									pixel_grid[write_section[1]][write_section[0] + nibble_index] = "0x" + ordered_row_pixel_data.charAt(7 - nibble_index);
@@ -425,3 +425,4 @@ function updateSpriteDataFormat() {
 updateEditPalette();
 updateNumColorPalette();
 updatePalColPicker();
+updateSpriteDataFormat();
