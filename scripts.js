@@ -115,8 +115,14 @@ function saveData(selection, file_name) { // selections: 0b_1: palette; 0b1_: sp
 
 		text += pal_name.value + ":\n";
 
-		for (let col_num = 0; col_num < pal_col; col_num++) {
-			palette_data += halfword_dir.value + ' ' + hex_prefix.value + document.getElementById("col_0x" + col_num.toString(16)).dataset.color15b + '\n';
+		if (use_bin) {
+			for (let col_num = 0; col_num < pal_col; col_num++) {
+				palette_data += halfword_dir.value + ' ' + bin_prefix.value + parseInt(document.getElementById("col_0x" + col_num.toString(16)).dataset.color15b, 16).toString(2).padStart(16, '0') + '\n';
+			}
+		} else {
+			for (let col_num = 0; col_num < pal_col; col_num++) {
+				palette_data += halfword_dir.value + ' ' + hex_prefix.value + document.getElementById("col_0x" + col_num.toString(16)).dataset.color15b + '\n';
+			}
 		}
 
 		text += palette_data;
