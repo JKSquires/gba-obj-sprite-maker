@@ -1,6 +1,7 @@
 let pal_col = 16;
 let edit_palette = false;
 let use_word = false;
+let use_bin = false;
 let selected_color = "0";
 let dim;
 let pixel_grid;
@@ -422,7 +423,14 @@ function updateSpriteDataFormat() {
 	word_dir_area.style.display = use_word ? "block" : "none";
 }
 
+function updatePaletteDataFormat() {
+	use_bin = use_bin_checkbox.checked;
+
+	bin_sel_area.style.display = use_bin ? "block" : "none";
+}
+
 updateEditPalette();
 updateNumColorPalette();
 updatePalColPicker();
 updateSpriteDataFormat();
+updatePaletteDataFormat();

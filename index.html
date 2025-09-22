@@ -17,10 +17,17 @@
 <p>Use words instead of halfwords for sprite data: <input type="checkbox" onchange="updateSpriteDataFormat()" id="use_word_checkbox"></p>
 <p style="display:none;" id="word_dir_area">Enter the word/32-bit constant directive for your assembler (e.g. .word, DD, @DCD): <textarea id="word_dir"></textarea></p>
 
-<p>Select the hexadecimal prefix for saving and loading: 
+<p>Select the hexadecimal prefix for saving and loading sprite data: 
 	<select id="hex_prefix">
 		<option>0x</option>
 		<option>$</option>
+	</select>
+</p>
+<p>Use binary values for palette data: <input type="checkbox" onchange="updatePaletteDataFormat()" id="use_bin_checkbox"></p>
+<p style="display:none;" id="bin_sel_area">Select the binary prefix for saving and loading palette data: 
+	<select id="bin_prefix">
+		<option>0b</option>
+		<option>%</option>
 	</select>
 </p>
 
