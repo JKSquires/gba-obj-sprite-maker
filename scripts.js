@@ -220,18 +220,29 @@ async function loadPalData() {
 
 						if (line.length > halfword_dir.value.length && line.substring(0, halfword_dir.value.length) == halfword_dir.value) {
 							let color = line.substring(halfword_dir.value.length);
-							color = color.replaceAll(hex_prefix.value, "");
+							let button_color;
+							
+							if (use_bin) {
+								color = color.replaceAll(bin_prefix.value, "");
+
+								button_color = col15bToCol24b(parseInt(color, 2)).toString(16).padStart(6, '0');
+							
+								console.log("Color found: 15b: " + hex_prefix.value + color + "; 24b: " + hex_prefix.value + button_color);
+							} else {
+								color = color.replaceAll(hex_prefix.value, "");
+
+								button_color = col15bToCol24b(parseInt(color, 16)).toString(16).padStart(6, '0');
+							
+								console.log("Color found: 15b: " + bin_prefix.value + color + "; 24b: " + hex_prefix.value + button_color);
+							}
 
 							let button = document.getElementById("col_0x" + color_lines.toString(16));
-							let button_color = col15bToCol24b(parseInt(color, 16)).toString(16).padStart(6, '0');
 
 							button.dataset.color15b = color;
 							button.dataset.color24b = button_color;
 							button.style.backgroundColor = '#' + button_color;
 
 							updateColorButtonTextColor(button);
-							
-							console.log("Color found: 15b: " + hex_prefix.value + color + "; 24b: " + hex_prefix.value + button_color);
 
 							color_lines++;
 							console.log(color_lines, pal_col);
