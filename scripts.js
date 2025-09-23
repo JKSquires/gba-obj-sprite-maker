@@ -238,7 +238,7 @@ async function loadPalData() {
 
 							let button = document.getElementById("col_0x" + color_lines.toString(16));
 
-							button.dataset.color15b = color;
+							button.dataset.color15b = use_bin ? parseInt(color, 2).toString(16).padStart(4, '0') : color.padStart(4, '0');
 							button.dataset.color24b = button_color;
 							button.style.backgroundColor = '#' + button_color;
 
@@ -254,6 +254,7 @@ async function loadPalData() {
 		}
 
 		updateSpriteGrid();
+		updatePaletteColorSelection("0x0");
 
 		if (!found) {
 			alert("Could not find palette label `" + pal_name.value + "` in file");
