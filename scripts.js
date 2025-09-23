@@ -6,6 +6,15 @@ let selected_color = "0";
 let dim;
 let pixel_grid;
 
+let is_mouse_down = false;
+
+document.onmousedown = () => {
+	is_mouse_down = true;
+};
+document.onmouseup = () => {
+	is_mouse_down = false;
+};
+
 function col15bToCol24b(col_15b) {
 	const scale = 8;
 
@@ -367,6 +376,12 @@ function updateSpritePixel(x, y) {
 	pixel.title = "(" + x + ", " + y + "): " + pixel_grid[y][x];
 }
 
+function dragUpdateSpritePixel(x, y) {
+	if (is_mouse_down) {
+		updateSpritePixel(x, y);
+	}
+}
+
 function updateSpriteGrid() {
 	if (!dim || !pixel_grid) {
 		return;
@@ -380,7 +395,8 @@ function updateSpriteGrid() {
 		for (let col = 0; col < dim[0]; col++) {
 			grid += "<td style='width:" + scale + "px;height:" + scale + "px;background-color:#" + document.getElementById("col_" + pixel_grid[row][col]).dataset.color24b + ";' " +
 				"title='(" + col + ", " + row + "): " + pixel_grid[row][col] + "' " +
-				"onclick='updateSpritePixel(" + col + ',' + row + ");' " +
+				"onmousedown='updateSpritePixel(" + col + ',' + row + ");' " +
+				"onmouseenter='dragUpdateSpritePixel(" + col + ',' + row + ");' " +
 				"id='grid_" + col + ',' + row + "'>" + "</td>";
 		}
 		grid += "</tr>";
@@ -425,6 +441,7 @@ function btn24bTo15b() {
 function selPalColByPicker() {
 	let val = col24bToCol15b(parseInt(pal_col_picker.value.substring(1), 16));
 	pal_col_code.value = val.toString(16).padStart(4, '0');
+	pal_col_code_bin.value = val.toString(2).padStart(16, '0');
 }
 
 function updateEditPalette() {
