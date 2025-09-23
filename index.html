@@ -87,7 +87,8 @@
 	
 	<p>Palette color id: <strong id="pal_col_id"></strong></p>
 	<input type="color" onchange="selPalColByPicker();" id="pal_col_picker">
-	<p>0x<textarea onchange="updatePalColPicker();" id="pal_col_code"></textarea></p>
+	<p>0x<textarea onchange="updateHexPalColPicker();" id="pal_col_code"></textarea></p>
+	<p>0b<textarea onchange="updateBinPalColPicker();" id="pal_col_code_bin"></textarea></p>
 
 	<button onclick="palette_dialog.close();">Close</button>
 	<button onclick="savePaletteDialog();">Save &amp; Close</button>

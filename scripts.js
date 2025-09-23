@@ -72,6 +72,7 @@ function colorButtonFunc(col_num) {
 		color_conv_box.value = "";
 		pal_col_picker.value = '#' + button.dataset.color24b;
 		pal_col_code.value = button.dataset.color15b;
+		pal_col_code_bin.value = parseInt(pal_col_code.value, 16).toString(2).padStart(16, '0');
 
 		pal_col_id.innerText = col_num;
 
@@ -434,6 +435,16 @@ function updatePalColPicker() {
 	let val = col15bToCol24b(parseInt(pal_col_code.value, 16));
 
 	pal_col_picker.value = '#' + val.toString(16).padStart(6, '0');
+}
+
+function updateHexPalColPicker() {
+	pal_col_code_bin.value = parseInt(pal_col_code.value, 16).toString(2).padStart(16, '0');
+	updatePalColPicker();
+}
+
+function updateBinPalColPicker() {
+	pal_col_code.value = parseInt(pal_col_code_bin.value, 2).toString(16).padStart(4, '0');
+	updatePalColPicker();
 }
 
 function updateSpriteDataFormat() {
