@@ -7,7 +7,7 @@ let dim;
 let pixel_grid;
 
 function col15bToCol24b(col_15b) {
-	const scale = 8.22581;
+	const scale = 8;
 
 	let r = (col_15b & 0x1F) * scale;
 	let g = ((col_15b & 0x3E0) >> 5) * scale;
@@ -17,11 +17,11 @@ function col15bToCol24b(col_15b) {
 }
 
 function col24bToCol15b(col_24b) {
-	const scale = 0.121569;
+	const scale = 0.125
 
-	let b = (col_24b & 0xFF) * scale;
-	let g = ((col_24b & 0xFF00) >> 8) * scale;
-	let r = ((col_24b & 0xFF0000) >> 16) * scale;
+	let b = Math.floor((col_24b & 0xFF) * scale);
+	let g = Math.floor(((col_24b & 0xFF00) >> 8) * scale);
+	let r = Math.floor(((col_24b & 0xFF0000) >> 16) * scale);
 
 	return (b << 10) | (g << 5) | r;
 }
@@ -431,6 +431,7 @@ function updateEditPalette() {
 
 function updatePalColPicker() {
 	let val = col15bToCol24b(parseInt(pal_col_code.value, 16));
+
 	pal_col_picker.value = '#' + val.toString(16).padStart(6, '0');
 }
 
