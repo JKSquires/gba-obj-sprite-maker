@@ -1,12 +1,40 @@
-let pal_col = 16;
-let edit_palette = false;
-let use_word = false;
-let use_bin = false;
-let selected_color = "0";
-let dim;
-let pixel_grid;
+let pal_col_sel = document.getElementById("pal_col_sel");
+let pal_col_id = document.getElementById("pal_col_id");
+let pal_col_picker = document.getElementById("pal_col_picker");
+let pal_col_code = document.getElementById("pal_col_code");
+let pal_col_code_bin = document.getElementById("pal_col_code_bin");
+let pal_name = document.getElementById("pal_name");
+let palette_data = document.getElementById("palette_data");
+let palette_div = document.getElementById("palette_div");
+let palette_dialog = document.getElementById("palette_dialog");
+let sprite_name = document.getElementById("sprite_name");
+let sprite_grid = document.getElementById("sprite_grid");
+let sprite_size = document.getElementById("sprite_size");
+let color_conv_box = document.getElementById("color_conv_box");
+let halfword_dir = document.getElementById("halfword_dir");
+let word_dir = document.getElementById("word_dir");
+let bin_prefix = document.getElementById("bin_prefix");
+let hex_prefix = document.getElementById("hex_prefix");
+let load_pal = document.getElementById("load_pal");
+let load_sprite = document.getElementById("load_sprite");
+let grid_scale = document.getElementById("grid_scale");
+let num_color_checkbox = document.getElementById("num_color_checkbox");
+let edit_palette_checkbox = document.getElementById("edit_palette_checkbox");
+let use_word_checkbox = document.getElementById("use_word_checkbox");
+let use_bin_checkbox = document.getElementById("use_bin_checkbox");
+let word_dir_area = document.getElementById("word_dir_area");
+let bin_sel_area = document.getElementById("bin_sel_area");
 
-let is_mouse_down = false;
+let pal_col = 16; // might be used in the future to support 256 color palettes again
+let edit_palette = false; // denotes if the user can edit the palette
+let use_word = false; // denotes if sprite data will be formatted in words when importing/exporting
+let use_bin = false; // denotes if palette data will be formatted in binary when importing/exporting
+let selected_color = "0"; // specifies the index of the color in the palette in hexadecimal
+
+let dim; // sprite dimensions
+let pixel_grid; // grid of color indexes in palette for each pixel
+
+let is_mouse_down = false; // denotes if the mouse is considered clicked
 
 document.onmousedown = () => {
 	is_mouse_down = true;
@@ -15,36 +43,60 @@ document.onmouseup = () => {
 	is_mouse_down = false;
 };
 
+/* Converts 15-bit color values to 24-bit color values.
+Parameters:
+- col_15b (integer): 15-bit color value (BGR)
+Return: (integer)
+  24-bit color value (RGB) */
 function col15bToCol24b(col_15b) {
-	const scale = 8;
-
-	let r = (col_15b & 0x1F) * scale;
-	let g = ((col_15b & 0x3E0) >> 5) * scale;
-	let b = ((col_15b & 0x7C00) >> 10) * scale;
+	let r = (col_15b & 0x1F) << 3;
+	let g = ((col_15b & 0x3E0) >> 5) << 3;
+	let b = ((col_15b & 0x7C00) >> 10) << 3;
 
 	return (r << 16) | (g << 8) | b;
 }
 
+/* Converts 24-bit color values to 15-bit color values.
+Parameters:
+- col_24b (integer): 24-bit color value (RGB)
+Return: (integer)
+  15-bit color value (BGR) */
 function col24bToCol15b(col_24b) {
-	const scale = 0.125
-
-	let b = Math.floor((col_24b & 0xFF) * scale);
-	let g = Math.floor(((col_24b & 0xFF00) >> 8) * scale);
-	let r = Math.floor(((col_24b & 0xFF0000) >> 16) * scale);
+	let b = (col_24b & 0xFF) >> 3;
+	let g = ((col_24b & 0xFF00) >> 8) >> 3;
+	let r = ((col_24b & 0xFF0000) >> 16) >> 3;
 
 	return (b << 10) | (g << 5) | r;
 }
 
+/* Updates text color of a button to contrast button background color.
+Parameters:
+- button (HTMLElement): Intended to be a palette editor button
+Side-Effects:
+- Updates `button` text color 
+Return: (void) */
 function updateColorButtonTextColor(button) {
-	let r = parseInt(button.dataset.color24b.substring(0,2));
-	let g = parseInt(button.dataset.color24b.substring(2,4));
-	let b = parseInt(button.dataset.color24b.substring(4,6));
+	let r = parseInt(button.dataset.color24b.substring(0,2), 16);
+	let g = parseInt(button.dataset.color24b.substring(2,4), 16);
+	let b = parseInt(button.dataset.color24b.substring(4,6), 16);
 	
 	let lum = 0.3 * r + 0.6 * g + 0.1 * b;
 
 	button.style.color = lum < 0x7F ? "#fff" : "#000";
 }
 
+/* Updates the visual display for what color in the palette is selected.
+Parameters:
+- col_num (string): Hexadecimal index for the color in the palette
+Globals Used:
+- selected_color
+- pal_col_sel
+Preconditions:
+- The `loadPaletteButtons` function should be run at least once before using this function
+Side-Effects:
+- Updates `selected_color`
+- Updates `pal_col_sel` text, text color, and background color 
+Return: (void) */
 function updatePaletteColorSelection(col_num) {
 	let button = document.getElementById("col_" + col_num);
 
@@ -55,6 +107,16 @@ function updatePaletteColorSelection(col_num) {
 	pal_col_sel.style.color = button.style.color;
 }
 
+/* Handles saving and closing the palette color edit dialog. 
+Globals Used:
+- pal_col_id
+- pal_col_picker
+- palette_dialog
+Side-Effects:
+- Update `button` background color, 15-bit color data, and 24-bit color data
+- Calls `updateColorButtonTextColor`, `updatePaletteColorSelection`, and `updateSpriteGrid` functions
+- Closes `palette_dialog` HTML element 
+Return: (void) */
 function savePaletteDialog() {
 	let col_num = pal_col_id.innerText;
 	let button = document.getElementById("col_" + col_num);
@@ -72,10 +134,28 @@ function savePaletteDialog() {
 	palette_dialog.close();
 }
 
+/* Allows the user to edit or use a palette color.
+Parameters:
+- col_num (string): Hexadecimal index for the color in the palette
+Globals Used:
+- edit_palette
+- color_conv_box
+- pal_col_picker
+- pal_col_code
+- pal_col_code_bin
+- pal_col_id
+- palette_dialog
+Side-Effects:
+- Clears `color_conv_box` value
+- Updates `pal_col_picker` value
+- Updates `pal_col_code` value
+- Updates `pal_col_code_bin` value
+- Updates `pal_col_id` text
+- Opens `palette_dialog`
+- Calls `updatePaletteColorSelection` function 
+Return: (void) */
 function colorButtonFunc(col_num) {
 	if (edit_palette) {
-		console.log("Edit " + col_num);
-		
 		let button = document.getElementById("col_" + col_num);
 
 		color_conv_box.value = "";
@@ -87,12 +167,19 @@ function colorButtonFunc(col_num) {
 
 		palette_dialog.showModal();
 	} else {
-		console.log("Use " + col_num);
-		
 		updatePaletteColorSelection(col_num);
 	}
 }
 
+/* Loads palette color buttons into the palette editor
+Globals Used:
+- palette_div
+- pal_col
+Side-Effects:
+- Modifies `palette_div` inner HTML
+  - Creates new HTML button elements
+- Calls `updateColorButtonTextColor` and `updatePaletteColorSelecton` functions
+Return: (void) */
 function loadPaletteButtons() {
 	palette_div.innerHTML = "";
 
@@ -118,7 +205,28 @@ function loadPaletteButtons() {
 	updatePaletteColorSelection("0x0");
 }
 
-function saveData(selection, file_name) { // selections: 0b_1: palette; 0b1_: sprite
+/* Saves palette and/or sprite data to a file.
+Parameters:
+- selection (integer)
+  - 0b_1: download palette data; 0b1_: dowload sprite data
+- file_name (string)
+Globals Used:
+- pal_name
+- use_bin
+- pal_col
+- halfword_dir
+- word_dir
+- bin_prefix
+- hex_prefix
+- sprite_name
+- dim
+- pixel_grid
+Preconditions:
+- The `updateGridSize` function should be run at least once before using this function
+Side-Effects:
+- Downloads a file
+Returns: (void) */
+function saveData(selection, file_name) {
 	let text = "";
 	if (selection & 1) {
 		let palette_data = "";
@@ -146,7 +254,7 @@ function saveData(selection, file_name) { // selections: 0b_1: palette; 0b1_: sp
 			for (let col_sec = 0; col_sec < dim[0]; col_sec += 8) {
 				for (let row = row_sec; row < row_sec + 8; row++) {
 					sprite_data += use_word ? 
-						word_dir.value + " " + hex_prefix.value +
+						word_dir.value + " " + hex_prefix.value + // use word directive
 						pixel_grid[row][col_sec + 7].substring(2) +
 						pixel_grid[row][col_sec + 6].substring(2) +
 						pixel_grid[row][col_sec + 5].substring(2) +
@@ -155,7 +263,7 @@ function saveData(selection, file_name) { // selections: 0b_1: palette; 0b1_: sp
 						pixel_grid[row][col_sec + 2].substring(2) +
 						pixel_grid[row][col_sec + 1].substring(2) +
 						pixel_grid[row][col_sec].substring(2) + '\n'
-						: halfword_dir.value + " " + hex_prefix.value +
+						: halfword_dir.value + " " + hex_prefix.value + // use halfword directive
 						pixel_grid[row][col_sec + 3].substring(2) +
 						pixel_grid[row][col_sec + 2].substring(2) +
 						pixel_grid[row][col_sec + 1].substring(2) +
@@ -181,6 +289,13 @@ function saveData(selection, file_name) { // selections: 0b_1: palette; 0b1_: sp
 	link.click();
 }
 
+/* Checks if the halfword directive entry has text.
+Globals used:
+- halfword_dir
+Side-Effects:
+- Show alert
+Returns: (boolean)
+  true if halfword directive entry has text; false if empty */
 function checkHalfwordDirective() {
 	if (halfword_dir.value == "") {
 		alert("Halfword Directive is empty!");
@@ -191,6 +306,13 @@ function checkHalfwordDirective() {
 	return true;
 }
 
+/* Checks if the word directive entry has text.
+Globals used:
+- word_dir
+Side-Effects:
+- Show alert
+Returns: (boolean)
+  true if word directive entry has text; false if empty */
 function checkWordDirective() {
 	if (word_dir.value == "") {
 		alert("Word Directive is empty!");
@@ -201,6 +323,23 @@ function checkWordDirective() {
 	return true;
 }
 
+/* Loads uploaded palette data to the palette editor.
+Globals used:
+- load_pal
+- pal_name
+- pal_col
+- halfword_dir
+- use_bin
+- bin_prefix
+- hex_prefix
+Preconditions:
+- The `updateNumColorPalette` function should be run at least once before using this function
+Side-Effects:
+- Calls `checkHalfwordDirective`, `updateColorButtonTextColor`, `updateSpriteGrid`, and `updatePaletteColorSelection` functions
+- Displays debug logs in console
+- Updates palette buttons to loaded palette data
+- Shows alert
+Returns: (void) */
 async function loadPalData() {
 	checkHalfwordDirective();
 
@@ -272,6 +411,22 @@ async function loadPalData() {
 	}
 }
 
+/* Loads uploaded sprite data to the sprite grid.
+Globals Used:
+- use_word
+- load_sprite
+- word_dir
+- sprite_name
+- dim
+- pixel_grid
+Preconditions:
+- The `updateGridSize` function should be run at least once before using this function
+Side-Effects:
+- Calls `checkWordDirective`, `checkHalfwordDirective`, and `updateSpriteGrid` functions
+- Displays debug logs in console
+- Updates `pixel_grid` with loaded sprite data
+- Show alert
+Return: (void) */
 async function loadSpriteData() {
 	if (use_word) {
 		checkWordDirective();
@@ -291,7 +446,7 @@ async function loadSpriteData() {
 			console.log("Searching for sprite `" + sprite_name.value + "` label in line: " + line);
 
 			if (line.length >= sprite_name.value.length + 1) {
-				if (line.substring(0, pal_name.value.length + 2) == sprite_name.value + ':') {
+				if (line.substring(0, sprite_name.value.length + 2) == sprite_name.value + ':') {
 					console.log("Found Sprite Label");
 
 					found = true;
@@ -367,6 +522,17 @@ async function loadSpriteData() {
 	}
 }
 
+/* Updates a single pixel in the sprite grid to the currently selected color.
+Parameters:
+- x (integer): x-coordinate of the pixel
+- y (integer): y-coordinate of the pixel
+Globals Used:
+- pixel_grid
+- selected_color
+Side-Effects:
+- Updates `pixel_grid`
+- Updates corresponding sprite grid pixel background color and title
+Return: (void)*/
 function updateSpritePixel(x, y) {
 	pixel_grid[y][x] = selected_color;
 
@@ -376,15 +542,34 @@ function updateSpritePixel(x, y) {
 	pixel.title = "(" + x + ", " + y + "): " + pixel_grid[y][x];
 }
 
+/* Updates sprite grid pixel when mouse is clicked
+Parameters:
+- x (integer): x-coordinate of the pixel
+- y (integer): y-coordinate of the pixel
+Globals Used:
+- is_mouse_down
+Side-Effects:
+- Calls updateSpritePixel` function`
+Return: (void)*/
 function dragUpdateSpritePixel(x, y) {
 	if (is_mouse_down) {
 		updateSpritePixel(x, y);
 	}
 }
 
+/* Updates the whole sprite grid.
+Globals Used:
+- dim
+- pixel_grid
+- grid_scale
+- sprite_grid
+Side-Effects:
+- Calls `updateGridSize` function
+- Updates `sprite_grid` inner HTML
+Return: (void) */
 function updateSpriteGrid() {
 	if (!dim || !pixel_grid) {
-		return;
+		updateGridSize();
 	}
 
 	let scale = 1 + 10 * grid_scale.value;
@@ -405,6 +590,16 @@ function updateSpriteGrid() {
 	sprite_grid.innerHTML = grid;
 }
 
+/* Updates the sprite grid dimentions.
+Globals Used:
+- sprite_size
+- pixel_grid
+- dim
+Side-Effects:
+- Updates `dim`
+- Updates `pixel_grid`
+- Calls `updateSpriteGrid` function
+Return: (void) */
 function updateGridSize() {
 	dim = sprite_size.value.split('x');
 
@@ -421,6 +616,14 @@ function updateGridSize() {
 	updateSpriteGrid();
 }
 
+/* Update the number of colors in the palette.
+Globals Used:
+- pal_col
+- num_color_checkbox
+Side-Effect:
+- Updates `pal_col`
+- Calls `loadPaletteButtons` and `updateGridSize` functions
+Return: (void) */
 function updateNumColorPalette() {
 	pal_col = num_color_checkbox.checked ? 256 : 16;
 
@@ -428,48 +631,116 @@ function updateNumColorPalette() {
 	updateGridSize();
 }
 
+/* Convert and store 15-bit color value to 24-bit color value.
+Globals Used:
+- color_conv_box
+Side-Effects:
+- Updates `color_conv_box` value
+Return: (void) */
 function btn15bTo24b() {
 	let val = col15bToCol24b(parseInt(color_conv_box.value, 16));
 	color_conv_box.value = val.toString(16).padStart(6, '0');
 }
 
+/* Convert and store 24-bit color value to 15-bit color value.
+Globals Used:
+- color_conv_box
+Side-Effects:
+- Updates `color_conv_box` value
+Return: (void) */
 function btn24bTo15b() {
 	let val = col24bToCol15b(parseInt(color_conv_box.value, 16));
 	color_conv_box.value = val.toString(16).padStart(4, '0');
 }
 
+/* Store color value from color picker to be used in the palette.
+Globals Used:
+- pal_col_picker
+- pal_col_code
+- pal_col_code_bin
+Side-Effects:
+- Updates `pal_col_code` and `pal_col_code_bin` values
+Return: (void) */
 function selPalColByPicker() {
 	let val = col24bToCol15b(parseInt(pal_col_picker.value.substring(1), 16));
 	pal_col_code.value = val.toString(16).padStart(4, '0');
 	pal_col_code_bin.value = val.toString(2).padStart(16, '0');
 }
 
+/* Update palette mode.
+Globals Used:
+- edit_palette
+- edit_palette_checkbox
+Side-Effects:
+- Updates `edit_palette`
+Return: (void) */
 function updateEditPalette() {
 	edit_palette = edit_palette_checkbox.checked;
 }
 
+/* Update color picker to color code input.
+Globals Used:
+- pal_col_code
+- pal_col_picker
+Side-Effects:
+- Updates `pal_col_picker` value
+Return: (void) */
 function updatePalColPicker() {
 	let val = col15bToCol24b(parseInt(pal_col_code.value, 16));
 
 	pal_col_picker.value = '#' + val.toString(16).padStart(6, '0');
 }
 
+/* Update color picker and binary color code input to hexadecimal color code input.
+Globals Used:
+- pal_col_code_bin
+- pal_col_code
+Side-Effects:
+- Updates `pal_col_code_bin` value
+- Calls `updatePalCalPicker`
+Return: (void) */
 function updateHexPalColPicker() {
 	pal_col_code_bin.value = parseInt(pal_col_code.value, 16).toString(2).padStart(16, '0');
 	updatePalColPicker();
 }
 
+/* Update color picker and hexadecimal color code input to binary color code input.
+Globals Used:
+- pal_col_code
+- pal_col_code_bin
+Side-Effects:
+- Updates `pal_col_code` value
+- Calls `updatePalCalPicker`
+Return: (void) */
 function updateBinPalColPicker() {
 	pal_col_code.value = parseInt(pal_col_code_bin.value, 2).toString(16).padStart(4, '0');
 	updatePalColPicker();
 }
 
+/* Update sprite data save mode.
+Globals Used:
+- use_word
+- use_word_checkbox
+- word_dir_area
+Side-Effects:
+- Updates `use_word`
+- Updates `word_dir_area` style
+Return: (void) */
 function updateSpriteDataFormat() {
 	use_word = use_word_checkbox.checked;
 
 	word_dir_area.style.display = use_word ? "block" : "none";
 }
 
+/* Update palette data save mode.
+Globals Used:
+- use_bin
+- use_bin_checkbox
+- bin_sel_area
+Side-Effects:
+- Updates `use_bin`
+- Updates `bin_dir_area` style
+Return: (void) */
 function updatePaletteDataFormat() {
 	use_bin = use_bin_checkbox.checked;
 
