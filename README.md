@@ -12,6 +12,6 @@ Labels must use a colon at the end. The data must be formatted with halfword (16
 
 See [example1.asm](examples/example1.asm) for a simple example palette and sprite. In this example, the *halfword directive* is `@DCW`, the *hexadecimal prefix* is '0x', the *palette name* is `palette`, the *sprite name* is `sprite`, and the *size* is `8x8`.
 
-See [example2.asm](examples/example2.asm) for a more complicated example palette and sprite. In thi example, the *halfword directive* is `@DCW`, the *word directive* is `@DCD`, the *hexadecimal prefix* is '0x', the *binary prefix* is '%', the *palette name* is `palette`, the *sprite name* is `sprite`, and the *size* is `16x16`.
+See [example2.asm](examples/example2.asm) for a more complicated example palette and sprite. In this example, the *halfword directive* is `@DCW`, the *word directive* is `@DCD`, the *hexadecimal prefix* is '0x', the *binary prefix* is '%', the *palette name* is `palette`, the *sprite name* is `sprite`, and the *size* is `16x16`.
 
 
