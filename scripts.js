@@ -74,7 +74,7 @@ Parameters:
 - button (HTMLElement): Intended to be a palette editor button
 Side-Effects:
 - Updates `button` text color 
-Return: (void) */
+Return: (undefined) */
 function updateColorButtonTextColor(button) {
 	let r = parseInt(button.dataset.color24b.substring(0,2), 16);
 	let g = parseInt(button.dataset.color24b.substring(2,4), 16);
@@ -96,7 +96,7 @@ Preconditions:
 Side-Effects:
 - Updates `selected_color`
 - Updates `pal_col_sel` text, text color, and background color 
-Return: (void) */
+Return: (undefined) */
 function updatePaletteColorSelection(col_num) {
 	let button = document.getElementById("col_" + col_num);
 
@@ -116,7 +116,7 @@ Side-Effects:
 - Update `button` background color, 15-bit color data, and 24-bit color data
 - Calls `updateColorButtonTextColor`, `updatePaletteColorSelection`, and `updateSpriteGrid` functions
 - Closes `palette_dialog` HTML element 
-Return: (void) */
+Return: (undefined) */
 function savePaletteDialog() {
 	let col_num = pal_col_id.innerText;
 	let button = document.getElementById("col_" + col_num);
@@ -153,7 +153,7 @@ Side-Effects:
 - Updates `pal_col_id` text
 - Opens `palette_dialog`
 - Calls `updatePaletteColorSelection` function 
-Return: (void) */
+Return: (undefined) */
 function colorButtonFunc(col_num) {
 	if (edit_palette) {
 		let button = document.getElementById("col_" + col_num);
@@ -179,7 +179,7 @@ Side-Effects:
 - Modifies `palette_div` inner HTML
   - Creates new HTML button elements
 - Calls `updateColorButtonTextColor` and `updatePaletteColorSelecton` functions
-Return: (void) */
+Return: (undefined) */
 function loadPaletteButtons() {
 	palette_div.innerHTML = "";
 
@@ -225,7 +225,7 @@ Preconditions:
 - The `updateGridSize` function should be run at least once before using this function
 Side-Effects:
 - Downloads a file
-Returns: (void) */
+Returns: (undefined) */
 function saveData(selection, file_name) {
 	let text = "";
 	if (selection & 1) {
@@ -339,7 +339,7 @@ Side-Effects:
 - Displays debug logs in console
 - Updates palette buttons to loaded palette data
 - Shows alert
-Returns: (void) */
+Returns: (undefined) */
 async function loadPalData() {
 	checkHalfwordDirective();
 
@@ -426,7 +426,7 @@ Side-Effects:
 - Displays debug logs in console
 - Updates `pixel_grid` with loaded sprite data
 - Show alert
-Return: (void) */
+Return: (undefined) */
 async function loadSpriteData() {
 	if (use_word) {
 		checkWordDirective();
@@ -532,7 +532,7 @@ Globals Used:
 Side-Effects:
 - Updates `pixel_grid`
 - Updates corresponding sprite grid pixel background color and title
-Return: (void)*/
+Return: (undefined)*/
 function updateSpritePixel(x, y) {
 	pixel_grid[y][x] = selected_color;
 
@@ -550,7 +550,7 @@ Globals Used:
 - is_mouse_down
 Side-Effects:
 - Calls updateSpritePixel` function`
-Return: (void)*/
+Return: (undefined)*/
 function dragUpdateSpritePixel(x, y) {
 	if (is_mouse_down) {
 		updateSpritePixel(x, y);
@@ -566,7 +566,7 @@ Globals Used:
 Side-Effects:
 - Calls `updateGridSize` function
 - Updates `sprite_grid` inner HTML
-Return: (void) */
+Return: (undefined) */
 function updateSpriteGrid() {
 	if (!dim || !pixel_grid) {
 		updateGridSize();
@@ -599,7 +599,7 @@ Side-Effects:
 - Updates `dim`
 - Updates `pixel_grid`
 - Calls `updateSpriteGrid` function
-Return: (void) */
+Return: (undefined) */
 function updateGridSize() {
 	dim = sprite_size.value.split('x');
 
@@ -623,7 +623,7 @@ Globals Used:
 Side-Effect:
 - Updates `pal_col`
 - Calls `loadPaletteButtons` and `updateGridSize` functions
-Return: (void) */
+Return: (undefined) */
 function updateNumColorPalette() {
 	pal_col = num_color_checkbox.checked ? 256 : 16;
 
@@ -636,7 +636,7 @@ Globals Used:
 - color_conv_box
 Side-Effects:
 - Updates `color_conv_box` value
-Return: (void) */
+Return: (undefined) */
 function btn15bTo24b() {
 	let val = col15bToCol24b(parseInt(color_conv_box.value, 16));
 	color_conv_box.value = val.toString(16).padStart(6, '0');
@@ -647,7 +647,7 @@ Globals Used:
 - color_conv_box
 Side-Effects:
 - Updates `color_conv_box` value
-Return: (void) */
+Return: (undefined) */
 function btn24bTo15b() {
 	let val = col24bToCol15b(parseInt(color_conv_box.value, 16));
 	color_conv_box.value = val.toString(16).padStart(4, '0');
@@ -660,7 +660,7 @@ Globals Used:
 - pal_col_code_bin
 Side-Effects:
 - Updates `pal_col_code` and `pal_col_code_bin` values
-Return: (void) */
+Return: (undefined) */
 function selPalColByPicker() {
 	let val = col24bToCol15b(parseInt(pal_col_picker.value.substring(1), 16));
 	pal_col_code.value = val.toString(16).padStart(4, '0');
@@ -673,7 +673,7 @@ Globals Used:
 - edit_palette_checkbox
 Side-Effects:
 - Updates `edit_palette`
-Return: (void) */
+Return: (undefined) */
 function updateEditPalette() {
 	edit_palette = edit_palette_checkbox.checked;
 }
@@ -684,7 +684,7 @@ Globals Used:
 - pal_col_picker
 Side-Effects:
 - Updates `pal_col_picker` value
-Return: (void) */
+Return: (undefined) */
 function updatePalColPicker() {
 	let val = col15bToCol24b(parseInt(pal_col_code.value, 16));
 
@@ -698,7 +698,7 @@ Globals Used:
 Side-Effects:
 - Updates `pal_col_code_bin` value
 - Calls `updatePalCalPicker`
-Return: (void) */
+Return: (undefined) */
 function updateHexPalColPicker() {
 	pal_col_code_bin.value = parseInt(pal_col_code.value, 16).toString(2).padStart(16, '0');
 	updatePalColPicker();
@@ -711,7 +711,7 @@ Globals Used:
 Side-Effects:
 - Updates `pal_col_code` value
 - Calls `updatePalCalPicker`
-Return: (void) */
+Return: (undefined) */
 function updateBinPalColPicker() {
 	pal_col_code.value = parseInt(pal_col_code_bin.value, 2).toString(16).padStart(4, '0');
 	updatePalColPicker();
@@ -725,7 +725,7 @@ Globals Used:
 Side-Effects:
 - Updates `use_word`
 - Updates `word_dir_area` style
-Return: (void) */
+Return: (undefined) */
 function updateSpriteDataFormat() {
 	use_word = use_word_checkbox.checked;
 
@@ -740,7 +740,7 @@ Globals Used:
 Side-Effects:
 - Updates `use_bin`
 - Updates `bin_dir_area` style
-Return: (void) */
+Return: (undefined) */
 function updatePaletteDataFormat() {
 	use_bin = use_bin_checkbox.checked;
 
