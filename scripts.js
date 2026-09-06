@@ -34,15 +34,6 @@ let selected_color = "0"; // specifies the index of the color in the palette in 
 let dim; // sprite dimensions
 let pixel_grid; // grid of color indexes in palette for each pixel
 
-let is_mouse_down = false; // denotes if the mouse is considered clicked
-
-document.onmousedown = () => {
-	is_mouse_down = true;
-};
-document.onmouseup = () => {
-	is_mouse_down = false;
-};
-
 /* Converts 15-bit color values to 24-bit color values.
 Parameters:
 - col_15b (integer): 15-bit color value (BGR)
@@ -526,6 +517,7 @@ async function loadSpriteData() {
 Parameters:
 - x (integer): x-coordinate of the pixel
 - y (integer): y-coordinate of the pixel
+- e (MouseEvent): the mouse event for the action
 Globals Used:
 - pixel_grid
 - selected_color
@@ -533,8 +525,12 @@ Side-Effects:
 - Updates `pixel_grid`
 - Updates corresponding sprite grid pixel background color and title
 Return: (undefined)*/
-function updateSpritePixel(x, y) {
-	pixel_grid[y][x] = selected_color;
+function updateSpritePixel(x, y, e) {
+	if (e.buttons & 2) {
+		pixel_grid[y][x] = "0x0";
+	} else {
+		pixel_grid[y][x] = selected_color;
+	}
 
 	let pixel = document.getElementById("grid_" + x + ',' + y);
 	
@@ -546,14 +542,13 @@ function updateSpritePixel(x, y) {
 Parameters:
 - x (integer): x-coordinate of the pixel
 - y (integer): y-coordinate of the pixel
-Globals Used:
-- is_mouse_down
+- e (MouseEvent): the mouse event for the action
 Side-Effects:
 - Calls updateSpritePixel` function`
 Return: (undefined)*/
-function dragUpdateSpritePixel(x, y) {
-	if (is_mouse_down) {
-		updateSpritePixel(x, y);
+function dragUpdateSpritePixel(x, y, e) {
+	if (e.buttons) {
+		updateSpritePixel(x, y, e);
 	}
 }
 
@@ -580,8 +575,8 @@ function updateSpriteGrid() {
 		for (let col = 0; col < dim[0]; col++) {
 			grid += "<td style='width:" + scale + "px;height:" + scale + "px;background-color:#" + document.getElementById("col_" + pixel_grid[row][col]).dataset.color24b + ";' " +
 				"title='(" + col + ", " + row + "): " + pixel_grid[row][col] + "' " +
-				"onmousedown='updateSpritePixel(" + col + ',' + row + ");' " +
-				"onmouseenter='dragUpdateSpritePixel(" + col + ',' + row + ");' " +
+				"onmousedown='updateSpritePixel(" + col + ',' + row + ",event);' " +
+				"onmouseenter='dragUpdateSpritePixel(" + col + ',' + row + ",event);' " +
 				"id='grid_" + col + ',' + row + "'>" + "</td>";
 		}
 		grid += "</tr>";
