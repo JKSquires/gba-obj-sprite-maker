@@ -70,9 +70,10 @@
 	</select>
 </p>
 <p>Editor Scale: <input type="range" min="0" max="11" value="3" onchange="updateSpriteGrid();" id="grid_scale"></p>
+<p>Editor Pixel Gaps: <input type="checkbox" onchange="updatePixelGaps()" id="pixel_gap_checkbox" checked></p>
 
 <div id="sprite_editor">
-	<table oncontextmenu="return false"><tbody id="sprite_grid"></tbody></table>
+	<table id="sprite_pixel_table" oncontextmenu="return false"><tbody id="sprite_grid"></tbody></table>
 </div>
 
 <dialog id="palette_dialog">

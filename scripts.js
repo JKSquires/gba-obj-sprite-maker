@@ -8,6 +8,7 @@ let palette_data = document.getElementById("palette_data");
 let palette_div = document.getElementById("palette_div");
 let palette_dialog = document.getElementById("palette_dialog");
 let sprite_name = document.getElementById("sprite_name");
+let sprite_pixel_table = document.getElementById("sprite_pixel_table");
 let sprite_grid = document.getElementById("sprite_grid");
 let sprite_size = document.getElementById("sprite_size");
 let color_conv_box = document.getElementById("color_conv_box");
@@ -24,11 +25,13 @@ let use_word_checkbox = document.getElementById("use_word_checkbox");
 let use_bin_checkbox = document.getElementById("use_bin_checkbox");
 let word_dir_area = document.getElementById("word_dir_area");
 let bin_sel_area = document.getElementById("bin_sel_area");
+let pixel_gap_checkbox = document.getElementById("pixel_gap_checkbox");
 
 let pal_col = 16; // might be used in the future to support 256 color palettes again
 let edit_palette = false; // denotes if the user can edit the palette
-let use_word = false; // denotes if sprite data will be formatted in words when importing/exporting
-let use_bin = false; // denotes if palette data will be formatted in binary when importing/exporting
+let use_word = use_word_checkbox.checked; // denotes if sprite data will be formatted in words when importing/exporting
+let use_bin = use_bin_checkbox.checked; // denotes if palette data will be formatted in binary when importing/exporting
+let pixel_gaps = pixel_gap_checkbox.checked; // denotes if there should be gaps and outlines between the pixels in the editor
 let selected_color = "0"; // specifies the index of the color in the palette in hexadecimal
 
 let dim; // sprite dimensions
@@ -742,8 +745,32 @@ function updatePaletteDataFormat() {
 	bin_sel_area.style.display = use_bin ? "block" : "none";
 }
 
+/* Updates the gaps and outlines between pixels based on checkbox state
+Globals Used:
+- pixel_gaps
+Side-Effects:
+- Updates `pixel_gaps`
+- Updates `sprite_pixel_table` style
+- Updates CSS variable `--editor-pixel-border`
+Return: (undefined) */
+function updatePixelGaps() {
+	pixel_gaps = pixel_gap_checkbox.checked;
+
+	let border_width;
+	if (pixel_gaps) {
+		sprite_pixel_table.style.borderCollapse = "separate";
+		border_width = "1px";
+	} else {
+		sprite_pixel_table.style.borderCollapse = "collapse";
+		border_width = "0";
+	}
+
+	document.documentElement.style.setProperty("--editor-pixel-border", border_width);
+}
+
 updateEditPalette();
 updateNumColorPalette();
 updatePalColPicker();
 updateSpriteDataFormat();
 updatePaletteDataFormat();
+updatePixelGaps();

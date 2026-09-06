@@ -1,3 +1,7 @@
+:root {
+	--editor-pixel-border: 1px;
+}
+
 html * {
 	font-family: "Courier", monospace;
 }
@@ -34,7 +38,10 @@ textarea {
 }
 #sprite_editor table {
 	width: max-content;
+	border: 1px solid #000;
 }
 #sprite_grid td {
-	border: 1px solid #000;
+	border-width: var(--editor-pixel-border);
+	border-style: solid;
+	border-color: #000;
 }
