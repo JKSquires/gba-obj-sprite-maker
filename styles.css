@@ -35,6 +35,8 @@ textarea {
 	padding: 10px;
 
 	overflow-x: auto;
+
+	user-select: none;
 }
 #sprite_editor table {
 	width: max-content;
