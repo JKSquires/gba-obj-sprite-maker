@@ -661,6 +661,7 @@ Side-Effects:
 Return: (undefined) */
 function selPalColByPicker() {
 	let val = col24bToCol15b(parseInt(pal_col_picker.value.substring(1), 16));
+	pal_col_picker.value = "#" + col15bToCol24b(val).toString(16).padStart(6, "0");
 	pal_col_code.value = val.toString(16).padStart(4, '0');
 	pal_col_code_bin.value = val.toString(2).padStart(16, '0');
 }
