@@ -657,7 +657,7 @@ Globals Used:
 - pal_col_code
 - pal_col_code_bin
 Side-Effects:
-- Updates `pal_col_code` and `pal_col_code_bin` values
+- Updates `pal_col_picker`, `pal_col_code`, and `pal_col_code_bin` values
 Return: (undefined) */
 function selPalColByPicker() {
 	let val = col24bToCol15b(parseInt(pal_col_picker.value.substring(1), 16));
