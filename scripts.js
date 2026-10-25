@@ -769,6 +769,82 @@ function updatePixelGaps() {
 	document.documentElement.style.setProperty("--editor-pixel-border", border_width);
 }
 
+/* Builds and downloads a 16-bit bitmap image file
+Globals Used:
+- dim
+- pixel_grid
+- sprite_name
+Side-Effects:
+- Downloads a file
+Return: (undefined) */
+function saveBMP() {
+	const file_size = 54 + 2 * dim[0] * dim[1];
+
+	let bmp_data = new Uint8Array(file_size);
+
+	/* Write 16-bit (halfword) to BMP data in little-endian at a given index.
+	Parameters:
+	- i (integer): the index in the array to write to
+	- halfword (integer): the 16-bit value to write
+	Side-Effects:
+	- Updates values in `bmp_data`
+	Return: (undefined) */
+	function writeH(i, halfword) {
+		bmp_data[i] = halfword & 0xFF;
+		bmp_data[i + 1] = (halfword & 0xFF00) >> 8;
+	}
+
+	/* Write 32-bit (word) to BMP data in little-endian at a given index.
+	Parameters:
+	- i (integer): the index in the array to write to
+	- word (integer): the 32-bit value to write
+	Side-Effects:
+	- Updates values in `bmp_data`
+	Return: (undefined) */
+	function writeW(i, word) {
+		bmp_data[i] = word & 0xFF;
+		bmp_data[i + 1] = (word & 0xFF00) >> 8;
+		bmp_data[i + 2] = (word & 0xFF0000) >> 16;
+		bmp_data[i + 3] = (word & 0xFF000000) >> 24;
+	}
+
+	img_dim = dim.map((d) => parseInt(d));
+
+	// header
+	writeH(0, 0x4D42); // signature
+	writeW(2, file_size); // file size
+	bmp_data[10] = 0x36; // color data offset
+
+	// info header
+	bmp_data[14] = 0x28; // info header size
+	writeW(18, img_dim[0]); // image width
+	writeW(22, img_dim[1]); // image height
+	bmp_data[26] = 1; // number of planes
+	bmp_data[28] = 16; // bits per pixel (15-bit color fits well into 16 bpp)
+
+	// color data
+	color_data_i = 0x36;
+	for (let y = img_dim[1] - 1; y >= 0; y--) {
+		for (let x = 0; x < img_dim[0]; x++) {
+			const color_bgr = parseInt(document.getElementById("col_" + pixel_grid[y][x]).dataset.color15b, 16);
+			const color_rgb = ((color_bgr & 0b0000000000011111) << 10) | (color_bgr & 0b0000001111100000) | ((color_bgr & 0b0111110000000000) >> 10);
+
+			writeH(color_data_i, color_rgb);
+
+			color_data_i += 2;
+		}
+	}
+
+	// download BMP file
+	const data_url = URL.createObjectURL(new Blob([bmp_data]));
+	const link = document.createElement("a");
+	link.href = data_url;
+	link.download = sprite_name.value + ".bmp";
+
+	link.click();
+	URL.revokeObjectURL(data_url);
+}
+
 updateEditPalette();
 updateNumColorPalette();
 updatePalColPicker();
