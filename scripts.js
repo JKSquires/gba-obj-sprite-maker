@@ -783,7 +783,7 @@ function saveBMP(depth) {
 	if (depth == 15) {
 		depth = 16;
 	}
-	if (depth != 16 || depth != 24) {
+	if (depth != 16 && depth != 24) {
 		console.error("Color depth should be either 16 or 24 for saving BMP file");
 		return;
 	}
