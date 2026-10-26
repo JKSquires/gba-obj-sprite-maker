@@ -780,7 +780,14 @@ Side-Effects:
 - Downloads a file
 Return: (undefined) */
 function saveBMP(depth) {
-	const file_size = 54 + dim[0] * dim[1] * (depth == 24 ? 4 : 2);
+	if (depth == 15) {
+		depth = 16;
+	}
+	if (depth != 16 || depth != 24) {
+		console.error("Color depth should be either 16 or 24 for saving BMP file");
+		return;
+	}
+	const file_size = 54 + dim[0] * dim[1] * (depth / 8);
 
 	let bmp_data = new Uint8Array(file_size);
 
@@ -823,7 +830,7 @@ function saveBMP(depth) {
 		bmp_data[i + 3] = (word & 0xFF000000) >> 24;
 	}
 
-	img_dim = dim.map((d) => parseInt(d));
+	let img_dim = dim.map((d) => parseInt(d));
 
 	// header
 	writeH(0, 0x4D42); // signature
@@ -838,7 +845,7 @@ function saveBMP(depth) {
 	bmp_data[28] = depth; // bits per pixel
 
 	// color data
-	color_data_i = 0x36;
+	let color_data_i = 0x36;
 	if (depth == 16) {
 		for (let y = img_dim[1] - 1; y >= 0; y--) {
 			for (let x = 0; x < img_dim[0]; x++) {
@@ -860,9 +867,6 @@ function saveBMP(depth) {
 				color_data_i += 3;
 			}
 		}
-	} else {
-		console.error("Color depth should be either 16 or 24 for saving BMP file");
-		return;
 	}
 
 	// download BMP file
