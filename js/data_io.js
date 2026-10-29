@@ -20,11 +20,9 @@ Side-Effects:
 - Downloads a file
 Returns: (undefined) */
 function saveData(selection, file_name) {
-	if (halfword_dir.value == "") {
-		if (!confirm("Halfword/16-bit constant directive is empty!\nAre you sure you still want to export?")) return;
-	}
-	if (use_word == true && word_dir.value == "") {
-		if (!confirm("Word/32-bit constant directive is empty!\nAre you sure you still want to export?")) return;
+	if (!checkHalfwordDirective()) return;
+	if (use_word) {
+		if (!checkWordDirective()) return;
 	}
 
 	let text = "";
@@ -107,7 +105,7 @@ Side-Effects:
 - Shows alert
 Returns: (undefined) */
 async function loadPalData() {
-	checkHalfwordDirective();
+	if (!checkHalfwordDirective()) return;
 
 	let file = load_pal.files[0];
 
@@ -194,10 +192,9 @@ Side-Effects:
 - Show alert
 Return: (undefined) */
 async function loadSpriteData() {
+	if (!checkHalfwordDirective()) return;
 	if (use_word) {
-		checkWordDirective();
-	} else {
-		checkHalfwordDirective();
+		if (!checkWordDirective()) return;
 	}
 
 	let file = load_sprite.files[0];

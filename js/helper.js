@@ -24,35 +24,31 @@ function col24bToCol15b(col_24b) {
 	return (b << 10) | (g << 5) | r;
 }
 
-/* Checks if the halfword directive entry has text.
+/* Checks if the halfword directive entry has text, and if not, asks the user if it should continue.
 Globals used:
 - halfword_dir
 Side-Effects:
-- Show alert
+- Show continue dialog
 Returns: (boolean)
-  true if halfword directive entry has text; false if empty */
+  true if halfword directive entry has text or user wants to continue; false otherwise */
 function checkHalfwordDirective() {
 	if (halfword_dir.value == "") {
-		alert("Halfword Directive is empty!");
-
-		return false;
+		return confirm("Halfword/16-bit constant directive is empty!\nContinue?");
 	}
 
 	return true;
 }
 
-/* Checks if the word directive entry has text.
+/* Checks if the word directive entry has text, and if not, asks the user if it should continue.
 Globals used:
 - word_dir
 Side-Effects:
-- Show alert
+- Show continue dialog
 Returns: (boolean)
-  true if word directive entry has text; false if empty */
+  true if word directive entry has text or user wants to continue; false otherwise */
 function checkWordDirective() {
 	if (word_dir.value == "") {
-		alert("Word Directive is empty!");
-
-		return false;
+		return confirm("Halfword/16-bit constant directive is empty!\nContinue?");
 	}
 
 	return true;
