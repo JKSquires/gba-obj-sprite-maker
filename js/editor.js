@@ -50,6 +50,7 @@ Return: (undefined) */
 function updateSpriteGrid() {
 	if (!dim || !pixel_grid) {
 		updateGridSize();
+		return;
 	}
 
 	let scale = 1 + 10 * grid_scale.value;
@@ -75,6 +76,8 @@ Globals Used:
 - sprite_size
 - pixel_grid
 - dim
+- rot_sprite_90
+- rot_sprite_n90
 Side-Effects:
 - Updates `dim`
 - Updates `pixel_grid`
@@ -91,6 +94,15 @@ function updateGridSize() {
 		for (let col = 0; col < dim[0]; col++) {
 			pixel_grid[row][col] = "0x0";
 		}
+	}
+
+	// Hide 90 and -90 degree rotation buttons if the sprite is not a square
+	if (dim[0] == dim[1]) {
+		rot_sprite_90.style.display = "inline";
+		rot_sprite_n90.style.display = "inline";
+	} else {
+		rot_sprite_90.style.display = "none";
+		rot_sprite_n90.style.display = "none";
 	}
 
 	updateSpriteGrid();
@@ -117,4 +129,61 @@ function updatePixelGaps() {
 	}
 
 	document.documentElement.style.setProperty("--editor-pixel-border", border_width);
+}
+
+/* Flip the sprite in the editor over the X-axis
+Globals Used:
+- pixel_grid
+Side-Effects:
+- Updates `pixel_grid`
+- Calls `updateSpriteGrid` function
+Return: (undefined) */
+function flipSpriteX() {
+	pixel_grid.reverse();
+	updateSpriteGrid();
+}
+
+/* Flip the sprite in the editor over the Y-axis
+Globals Used:
+- pixel_grid
+Side-Effects:
+- Updates `pixel_grid`
+- Calls `updateSpriteGrid` function
+Return: (undefined) */
+function flipSpriteY() {
+	pixel_grid = pixel_grid.map((row) => row.reverse());
+	updateSpriteGrid();
+}
+
+/* Rotates the sprite in the editor by 90 degrees counterclockwise
+Globals Used:
+- pixel_grid
+Side-Effects:
+- Updates `pixel_grid`
+- Calls `updateSpriteGrid` function
+Return: (undefined) */
+function rotSprite90() {
+	let rot_pixel_grid = [];
+	for (let col = 0; col < pixel_grid[0].length; col++) {
+		new_row = [];
+		for (let row = 0; row < pixel_grid.length; row++) {
+			new_row[row] = pixel_grid[row][col];
+		}
+		rot_pixel_grid[pixel_grid[0].length - col - 1] = new_row;
+	}
+	pixel_grid = rot_pixel_grid;
+
+	updateSpriteGrid();
+}
+
+/* Rotates the sprite in the editor by 180 degrees
+Globals Used:
+- pixel_grid
+Side-Effects:
+- Updates `pixel_grid`
+- Calls `updateSpriteGrid` function
+Return: (undefined) */
+function rotSprite180() {
+	pixel_grid = pixel_grid.reverse().map((row) => row.reverse());
+	updateSpriteGrid();
 }

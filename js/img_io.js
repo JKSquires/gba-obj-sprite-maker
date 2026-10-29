@@ -16,7 +16,7 @@ function saveBMP(depth) {
 		console.error("Color depth should be either 16 or 24 for saving BMP file");
 		return;
 	}
-	const file_size = 54 + dim[0] * dim[1] * (depth / 8);
+	const file_size = 54 + dim[0] * dim[1] * (depth == 16 ? 2 : 3);
 
 	let bmp_data = new Uint8Array(file_size);
 
