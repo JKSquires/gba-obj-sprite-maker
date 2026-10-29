@@ -20,6 +20,13 @@ Side-Effects:
 - Downloads a file
 Returns: (undefined) */
 function saveData(selection, file_name) {
+	if (halfword_dir.value == "") {
+		if (!confirm("Halfword/16-bit constant directive is empty!\nAre you sure you still want to export?")) return;
+	}
+	if (use_word == true && word_dir.value == "") {
+		if (!confirm("Word/32-bit constant directive is empty!\nAre you sure you still want to export?")) return;
+	}
+
 	let text = "";
 	if (selection & 1) {
 		let palette_data = "";
