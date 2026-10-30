@@ -1,5 +1,6 @@
 :root {
 	--editor-pixel-border: 1px;
+	--pal-col-btn-width: 60px;
 }
 
 html * {
@@ -13,7 +14,7 @@ textarea {
 }
 
 .pal_col_btn {
-	width: 4em;
+	width: var(--pal-col-btn-width);
 }
 
 #pal_col_sel {
@@ -25,6 +26,8 @@ textarea {
 	border: 2px solid #000;
 	
 	padding: 4px;
+
+	width: calc(var(--pal-col-btn-width) * 16);
 }
 #color_code_conv {
 	border: 2px solid #000;

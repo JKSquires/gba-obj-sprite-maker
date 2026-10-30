@@ -76,7 +76,7 @@ function loadPaletteButtons() {
 	palette_div.innerHTML = "";
 
 	for (let col_index = 0; col_index < pal_col; col_index++) {
-		let hex_index = "0x" + col_index.toString(16);
+		let hex_index = "0x" + col_index.toString(16).toUpperCase();
 		let col_button = document.createElement("button");
 
 		col_button.className = "pal_col_btn";

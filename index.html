@@ -14,7 +14,7 @@
 <h2>Save and Load Data</h2>
 <p>When saving and loading data, first make sure all the settings are correct.</p>
 <p>Enter the halfword/16-bit constant directive for your assembler (e.g. .half, DW, @DCW): <textarea id="halfword_dir"></textarea></p>
-<p>Use words instead of halfwords for sprite data: <input type="checkbox" onchange="updateSpriteDataFormat()" id="use_word_checkbox"></p>
+<p>Use words instead of halfwords for sprite data: <input type="checkbox" onchange="updateSpriteDataFormat()" id="use_word_checkbox" checked></p>
 <p style="display:none;" id="word_dir_area">Enter the word/32-bit constant directive for your assembler (e.g. .word, DD, @DCD): <textarea id="word_dir"></textarea></p>
 
 <p>Select the hexadecimal prefix for saving and loading sprite data: 
@@ -47,7 +47,7 @@
 <h2>Palette Editor and Selector</h2>
 
 <p>Palette Name/Label: <textarea id="pal_name">palette</textarea></p>
-<p style="display:none;">Toggle 256 Color Palette: <input type="checkbox" onchange="updateNumColorPalette()" id="num_color_checkbox"></p>
+<p>Toggle 256 Color Palette: <input type="checkbox" onchange="updateNumColorPalette()" id="num_color_checkbox"></p>
 <p>Toggle Edit Palette Mode: <input type="checkbox" onchange="updateEditPalette()" id="edit_palette_checkbox"></p>
 <div id="palette_div"></div>
 <p>Selected Palette Color: <span id="pal_col_sel"></span></p>

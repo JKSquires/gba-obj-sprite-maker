@@ -33,11 +33,11 @@ function saveData(selection, file_name) {
 
 		if (use_bin) {
 			for (let col_num = 0; col_num < pal_col; col_num++) {
-				palette_data += halfword_dir.value + ' ' + bin_prefix.value + parseInt(document.getElementById("col_0x" + col_num.toString(16)).dataset.color15b, 16).toString(2).padStart(16, '0') + '\n';
+				palette_data += halfword_dir.value + ' ' + bin_prefix.value + parseInt(document.getElementById("col_0x" + col_num.toString(16).toUpperCase()).dataset.color15b, 16).toString(2).padStart(16, '0') + '\n';
 			}
 		} else {
 			for (let col_num = 0; col_num < pal_col; col_num++) {
-				palette_data += halfword_dir.value + ' ' + hex_prefix.value + document.getElementById("col_0x" + col_num.toString(16)).dataset.color15b + '\n';
+				palette_data += halfword_dir.value + ' ' + hex_prefix.value + document.getElementById("col_0x" + col_num.toString(16).toUpperCase()).dataset.color15b + '\n';
 			}
 		}
 
@@ -51,25 +51,72 @@ function saveData(selection, file_name) {
 		for (let row_sec = 0; row_sec < dim[1]; row_sec += 8) {
 			for (let col_sec = 0; col_sec < dim[0]; col_sec += 8) {
 				for (let row = row_sec; row < row_sec + 8; row++) {
-					sprite_data += use_word ? 
-						word_dir.value + " " + hex_prefix.value + // use word directive
-						pixel_grid[row][col_sec + 7].substring(2) +
-						pixel_grid[row][col_sec + 6].substring(2) +
-						pixel_grid[row][col_sec + 5].substring(2) +
-						pixel_grid[row][col_sec + 4].substring(2) +
-						pixel_grid[row][col_sec + 3].substring(2) +
-						pixel_grid[row][col_sec + 2].substring(2) +
-						pixel_grid[row][col_sec + 1].substring(2) +
-						pixel_grid[row][col_sec].substring(2) + '\n'
-						: halfword_dir.value + " " + hex_prefix.value + // use halfword directive
-						pixel_grid[row][col_sec + 3].substring(2) +
-						pixel_grid[row][col_sec + 2].substring(2) +
-						pixel_grid[row][col_sec + 1].substring(2) +
-						pixel_grid[row][col_sec].substring(2) + ", " + hex_prefix.value +
-						pixel_grid[row][col_sec + 7].substring(2) +
-						pixel_grid[row][col_sec + 6].substring(2) +
-						pixel_grid[row][col_sec + 5].substring(2) +
-						pixel_grid[row][col_sec + 4].substring(2) + '\n';
+					function getPixelPalIndex(col_sec_offset) {
+						return pixel_grid[row][col_sec + col_sec_offset].substring(2);
+					}
+					let block;
+					if (pal_col == 16) {
+						if (use_word) {
+							block = [
+								" " + hex_prefix.value,
+								getPixelPalIndex(7),
+								getPixelPalIndex(6),
+								getPixelPalIndex(5),
+								getPixelPalIndex(4),
+								getPixelPalIndex(3),
+								getPixelPalIndex(2),
+								getPixelPalIndex(1),
+								getPixelPalIndex(0),
+							];
+						} else {
+							block = [
+								" " + hex_prefix.value,
+								getPixelPalIndex(3),
+								getPixelPalIndex(2),
+								getPixelPalIndex(1),
+								getPixelPalIndex(0),
+								", " + hex_prefix.value,
+								getPixelPalIndex(7),
+								getPixelPalIndex(6),
+								getPixelPalIndex(5),
+								getPixelPalIndex(4),
+							];
+						}
+					} else if (pal_col == 256) {
+						function getPixelPalIndex256(col_sec_offset) {
+							return getPixelPalIndex(col_sec_offset).padStart(2, '0');
+						}
+						if (use_word) {
+							block = [
+								" " + hex_prefix.value,
+								getPixelPalIndex256(3),
+								getPixelPalIndex256(2),
+								getPixelPalIndex256(1),
+								getPixelPalIndex256(0),
+								", " + hex_prefix.value +
+								getPixelPalIndex256(7),
+								getPixelPalIndex256(6),
+								getPixelPalIndex256(5),
+								getPixelPalIndex256(4),
+							];
+						} else {
+							block = [
+								" " + hex_prefix.value,
+								getPixelPalIndex256(1),
+								getPixelPalIndex256(0),
+								", " + hex_prefix.value,
+								getPixelPalIndex256(3),
+								getPixelPalIndex256(2),
+								", " + hex_prefix.value,
+								getPixelPalIndex256(5),
+								getPixelPalIndex256(4),
+								", " + hex_prefix.value,
+								getPixelPalIndex256(7),
+								getPixelPalIndex256(6),
+							];
+						}
+					}
+					sprite_data += (use_word ? word_dir : halfword_dir).value + block.join("") + '\n';
 				}
 			}
 		}
@@ -77,8 +124,6 @@ function saveData(selection, file_name) {
 		text += sprite_data;
 	}
 	
-	console.log("Downloading:\n" + text);
-
 	let data_url = "data:application/asm;charset=utf-8," + encodeURIComponent(text);
 	let link = document.createElement("a");
 	link.href = data_url;
@@ -116,19 +161,15 @@ async function loadPalData() {
 
 		for (let line_num = 0; line_num < text.length; line_num++) {
 			let line = text[line_num];
-			console.log("Searching for palette `" + pal_name.value + "` label in line: " + line);
 
 			if (line.length >= pal_name.value.length + 1) {
 				if (line.substring(0, pal_name.value.length + 2) == pal_name.value + ':') {
-					console.log("Found Palette Label");
-
 					found = true;
 
 					let color_lines = 0;
 
 					for (let color_line_num = 0; color_lines < pal_col && color_line_num < text.length - line_num - 1; color_line_num++) {
 						line = text[color_line_num + line_num + 1];
-						console.log("Parsing line for color: " + line);
 						line = line.split(';')[0];
 
 						if (line.length > halfword_dir.value.length && line.substring(0, halfword_dir.value.length) == halfword_dir.value) {
@@ -139,17 +180,13 @@ async function loadPalData() {
 								color = color.replaceAll(bin_prefix.value, "");
 
 								button_color = col15bToCol24b(parseInt(color, 2)).toString(16).padStart(6, '0');
-							
-								console.log("Color found: 15b: " + hex_prefix.value + color + "; 24b: " + hex_prefix.value + button_color);
 							} else {
 								color = color.replaceAll(hex_prefix.value, "");
 
 								button_color = col15bToCol24b(parseInt(color, 16)).toString(16).padStart(6, '0');
-							
-								console.log("Color found: 15b: " + bin_prefix.value + color + "; 24b: " + hex_prefix.value + button_color);
 							}
 
-							let button = document.getElementById("col_0x" + color_lines.toString(16));
+							let button = document.getElementById("col_0x" + color_lines.toString(16).toUpperCase());
 
 							button.dataset.color15b = use_bin ? parseInt(color, 2).toString(16).padStart(4, '0') : color.padStart(4, '0');
 							button.dataset.color24b = button_color;
@@ -158,7 +195,6 @@ async function loadPalData() {
 							updateColorButtonTextColor(button);
 
 							color_lines++;
-							console.log(color_lines, pal_col);
 						}
 					}
 					break;
@@ -170,7 +206,7 @@ async function loadPalData() {
 		updatePaletteColorSelection("0x0");
 
 		if (!found) {
-			alert("Could not find palette label `" + pal_name.value + "` in file");
+			alert("Could not find palette label `" + pal_name.value + ":` in file");
 		}
 	}
 }
@@ -183,6 +219,7 @@ Globals Used:
 - sprite_name
 - dim
 - pixel_grid
+- pal_col
 Preconditions:
 - The `updateGridSize` function should be run at least once before using this function
 Side-Effects:
@@ -206,12 +243,9 @@ async function loadSpriteData() {
 
 		for (let line_num = 0; line_num < text.length; line_num++) {
 			let line = text[line_num];
-			console.log("Searching for sprite `" + sprite_name.value + "` label in line: " + line);
 
 			if (line.length >= sprite_name.value.length + 1) {
 				if (line.substring(0, sprite_name.value.length + 2) == sprite_name.value + ':') {
-					console.log("Found Sprite Label");
-
 					found = true;
 
 					let sections = dim[0] * dim[1] / 8;
@@ -219,21 +253,42 @@ async function loadSpriteData() {
 
 					let pixel_lines = 0;
 
+					let attempt_16_when_256 = false;
+
 					for (let pixel_line_num = 0; pixel_lines < sections && pixel_line_num < text.length - line_num - 1; pixel_line_num++) {
 						line = text[pixel_line_num + line_num + 1];
-						console.log("Parsing line for pixel data: " + line);
 						line = line.split(';')[0];
 
 						if (use_word) {
 							if (word_dir.value != "" && line.length > word_dir.value.length && line.substring(0, word_dir.value.length) == word_dir.value) {
 								pixel_lines++;
 
-								let pixel_data = line.split(hex_prefix.value)[1];
-								
-								console.log("Pixel data found: " + hex_prefix.value + pixel_data);
+								let row_data = line.split(hex_prefix.value);
 
-								for (let nibble_index = 0; nibble_index < 8; nibble_index++) {
-									pixel_grid[write_section[1]][write_section[0] + nibble_index] = "0x" + pixel_data.charAt(7 - nibble_index);
+								if (pal_col == 256) {
+									if (row_data.length < 3 && !attempt_16_when_256) {
+										attempt_16_when_256 = confirm("Sprite data appears to be for a 16-color palette. Attempt to load?");
+										if (!attempt_16_when_256) {
+											return;
+										}
+									}
+
+									const ordered_row_pixel_data = row_data[2] + row_data[1];
+
+									for (let nibble_index = 0; nibble_index < 16; nibble_index += 2) {
+										let palette_index = ordered_row_pixel_data.charAt(14 - nibble_index) + ordered_row_pixel_data.charAt(15 - nibble_index);
+										if (palette_index.charAt(0) == '0') {
+											palette_index = palette_index.charAt(1);
+										}
+										pixel_grid[write_section[1]][write_section[0] + (nibble_index / 2)] = "0x" + palette_index;
+									}
+								}
+								if (pal_col == 16 || attempt_16_when_256) {
+									const pixel_data = line.split(hex_prefix.value)[1];
+
+									for (let nibble_index = 0; nibble_index < 8; nibble_index++) {
+										pixel_grid[write_section[1]][write_section[0] + nibble_index] = "0x" + pixel_data.charAt(7 - nibble_index);
+									}
 								}
 								
 								write_section[1]++;
@@ -250,16 +305,34 @@ async function loadSpriteData() {
 							if (halfword_dir.value != "" && line.length > halfword_dir.value.length && line.substring(0, halfword_dir.value.length) == halfword_dir.value) {
 								pixel_lines++;
 
-								let row_data = line.split(hex_prefix.value);
+								const row_data = line.split(hex_prefix.value);
 								
-								let ordered_row_pixel_data = row_data[2] + row_data[1]
+								if (pal_col == 256) {
+									if (row_data.length < 5 && !attempt_16_when_256) {
+										attempt_16_when_256 = confirm("Sprite data appears to be for a 16-color palette. Attempt to load?");
+										if (!attempt_16_when_256) {
+											return;
+										}
+									}
 
-								console.log("Pixel data found: " + hex_prefix.value + ordered_row_pixel_data);
+									const ordered_row_pixel_data = row_data[4] + row_data[3] + row_data[2] + row_data[1];
 
-								for (let nibble_index = 0; nibble_index < 8; nibble_index++) {
-									pixel_grid[write_section[1]][write_section[0] + nibble_index] = "0x" + ordered_row_pixel_data.charAt(7 - nibble_index);
+									for (let nibble_index = 0; nibble_index < 16; nibble_index += 2) {
+										let palette_index = ordered_row_pixel_data.charAt(14 - nibble_index) + ordered_row_pixel_data.charAt(15 - nibble_index);
+										if (palette_index.charAt(0) == '0') {
+											palette_index = palette_index.charAt(1);
+										}
+										pixel_grid[write_section[1]][write_section[0] + (nibble_index / 2)] = "0x" + palette_index;
+									}
 								}
-								
+								if (pal_col == 16 || attempt_16_when_256) {
+									const ordered_row_pixel_data = row_data[2] + row_data[1];
+
+									for (let nibble_index = 0; nibble_index < 8; nibble_index++) {
+										pixel_grid[write_section[1]][write_section[0] + nibble_index] = "0x" + ordered_row_pixel_data.charAt(7 - nibble_index);
+									}
+								}
+
 								write_section[1]++;
 								if (write_section[1] % 8 == 0) {
 									if (write_section[0] + 8 - dim[0] >= 0) {
@@ -280,7 +353,7 @@ async function loadSpriteData() {
 		updateSpriteGrid();
 
 		if (!found) {
-			alert("Could not find sprite label `" + sprite_name.value + "` in file");
+			alert("Could not find sprite label `" + sprite_name.value + ":` in file");
 		}
 	}
 }
