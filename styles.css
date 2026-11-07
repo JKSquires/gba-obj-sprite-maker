@@ -17,6 +17,13 @@ textarea {
 	width: var(--pal-col-btn-width);
 }
 
+#edit_buttons {
+	width: fit-content;
+
+	border: 2px solid #000;
+
+	padding: 4px;
+}
 #pal_col_sel {
 	font-weight: bold;
 

@@ -187,3 +187,18 @@ function rotSprite180() {
 	pixel_grid = pixel_grid.reverse().map((row) => row.reverse());
 	updateSpriteGrid();
 }
+
+/* Clears the sprite editor if the player confirms
+Globals Used:
+- pixel_grid
+Side-Effects:
+- Updates `pixel_grid`
+- Calls `updateSpriteGrid` function
+Return: (undefined) */
+function clearEditor() {
+	if (confirm("The editor will be cleared")) {
+		pixel_grid.forEach((row) => row.fill("0x0"));
+
+		updateSpriteGrid();
+	}
+}

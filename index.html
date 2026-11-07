@@ -79,12 +79,16 @@
 	<table id="sprite_pixel_table" oncontextmenu="return false"><tbody id="sprite_grid"></tbody></table>
 </div>
 
-<button onclick="flipSpriteY()" id="flip_sprite_h">Flip Horizontally</button>
-<button onclick="flipSpriteX()" id="flip_sprite_v">Flip Vertically</button>
-<br><br>
-<button onclick="rotSprite180()" id="rot_sprite_180">Rotate 180&deg;</button>
-<button onclick="rotSprite90();rotSprite180();" id="rot_sprite_n90">Rotate Clockwise 90&deg;</button>
-<button onclick="rotSprite90()" id="rot_sprite_90">Rotate Counterclockwise 90&deg;</button>
+<div id="edit_buttons">
+	<button onclick="flipSpriteY()" id="flip_sprite_h">Flip Horizontally</button>
+	<button onclick="flipSpriteX()" id="flip_sprite_v">Flip Vertically</button>
+	<br><br>
+	<button onclick="rotSprite180()" id="rot_sprite_180">Rotate 180&deg;</button>
+	<button onclick="rotSprite90();rotSprite180();" id="rot_sprite_n90">Rotate Clockwise 90&deg;</button>
+	<button onclick="rotSprite90()" id="rot_sprite_90">Rotate Counterclockwise 90&deg;</button>
+	<br><br>
+	<button onclick="clearEditor()" id="clear_editor">Clear</button>
+</div>
 
 
 <dialog id="palette_dialog">
