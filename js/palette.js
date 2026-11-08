@@ -188,3 +188,27 @@ function updateBinPalColPicker() {
 	pal_col_code.value = parseInt(pal_col_code_bin.value, 2).toString(16).padStart(4, '0');
 	updatePalColPicker();
 }
+
+/* Selects which palette swap color needs to be filled
+Globals Used:
+- swap_colors
+- select_swap_color
+- pal_col_swp_1
+Side-Effects:
+- Updates `select_swap_color` value
+- Updates `swap_colors` values
+- Updates `pal_col_swp_1` styles and text
+Return: (undefined) */
+function selectSwapPalCol() {
+	if (swap_col_checkbox.checked == true) {
+		select_swap_color = 1;
+	} else {
+		swap_colors = [null, null];
+
+		pal_col_swp_1.innerText = "--";
+		pal_col_swp_1.style.backgroundColor = "#fff";
+		pal_col_swp_1.style.color = "#000";
+
+		select_swap_color = 0;
+	}
+}

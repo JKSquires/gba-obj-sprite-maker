@@ -13,6 +13,7 @@ const pal_col_code_bin = document.getElementById("pal_col_code_bin");
 const pal_col_id = document.getElementById("pal_col_id");
 const pal_col_picker = document.getElementById("pal_col_picker");
 const pal_col_sel = document.getElementById("pal_col_sel");
+const pal_col_swp_1 = document.getElementById("pal_col_swp_1");
 const pal_name = document.getElementById("pal_name");
 const palette_data = document.getElementById("palette_data");
 const palette_dialog = document.getElementById("palette_dialog");
@@ -24,12 +25,13 @@ const sprite_grid = document.getElementById("sprite_grid");
 const sprite_name = document.getElementById("sprite_name");
 const sprite_pixel_table = document.getElementById("sprite_pixel_table");
 const sprite_size = document.getElementById("sprite_size");
+const swap_col_checkbox = document.getElementById("swap_col_checkbox");
 const use_bin_checkbox = document.getElementById("use_bin_checkbox");
 const use_word_checkbox = document.getElementById("use_word_checkbox");
 const word_dir = document.getElementById("word_dir");
 const word_dir_area = document.getElementById("word_dir_area");
 
-let pal_col; // might be used in the future to support 256 color palettes again
+let pal_col; // signifies how many colors are in the palette being used
 let edit_palette; // denotes if the user is in edit-palette mode
 let use_word; // denotes if sprite data will be formatted in words when importing/exporting
 let use_bin; // denotes if palette data will be formatted in binary when importing/exporting
@@ -38,6 +40,9 @@ let selected_color; // specifies the index of the color in the palette in hexade
 
 let dim; // sprite dimensions
 let pixel_grid; // grid of color indexes in palette for each pixel
+
+let select_swap_color; // selects which palette swap color is being selected (0: none)
+let swap_colors; // array to contain colors in palette to be swapped
 
 /* Update palette mode.
 Globals Used:
@@ -92,6 +97,12 @@ Globals Used:
 - pal_col_code_bin
 - pal_col_id
 - palette_dialog
+- swap_col_checkbox
+- select_swap_color
+- swap_colors
+- selected_color
+- pixel_grid
+- pal_col_swp_1
 Side-Effects:
 - Clears `color_conv_box` value
 - Updates `pal_col_picker` value
@@ -100,10 +111,69 @@ Side-Effects:
 - Updates `pal_col_id` text
 - Opens `palette_dialog`
 - Calls `updatePaletteColorSelection` function 
+- Calls `updateSpriteGrid` function
+- Updates `swap_col_checkbox` checked state
+- Updates `pixel_grid` values
+- Updates palette button styles
+- Updates `pal_col_swp_1` styles and text
+- Updates `swap_colors` values
 Return: (boolean)
   Always returns false  */
 function colorButtonFunc(col_num, force_edit) {
-	if (edit_palette || force_edit) {
+	if (select_swap_color != 0) {
+		let button = document.getElementById("col_" + col_num);
+
+		swap_colors[select_swap_color - 1] = {
+			col_num,
+			color15b: button.dataset.color15b,
+			color24b: button.dataset.color24b,
+			text_color: button.style.color,
+		};
+
+		if (select_swap_color == 2) {
+			let pal_col_button_1 = document.getElementById("col_" + swap_colors[0].col_num);
+			let pal_col_button_2 = document.getElementById("col_" + swap_colors[1].col_num);
+
+			pal_col_button_1.style.backgroundColor = "#" + swap_colors[1].color24b;
+			pal_col_button_1.style.color = swap_colors[1].text_color;
+			pal_col_button_1.dataset.color15b = swap_colors[1].color15b;
+			pal_col_button_1.dataset.color24b = swap_colors[1].color24b;
+
+			pal_col_button_2.style.backgroundColor = "#" + swap_colors[0].color24b;
+			pal_col_button_2.style.color = swap_colors[0].text_color;
+			pal_col_button_2.dataset.color15b = swap_colors[0].color15b;
+			pal_col_button_2.dataset.color24b = swap_colors[0].color24b;
+
+			for (let row = 0; row < pixel_grid.length; row++) {
+				for (let col = 0; col < pixel_grid[0].length; col++) {
+					if (pixel_grid[row][col] == swap_colors[0].col_num) {
+						pixel_grid[row][col] = swap_colors[1].col_num;
+					} else if (pixel_grid[row][col] == swap_colors[1].col_num) {
+						pixel_grid[row][col] = swap_colors[0].col_num;
+					}
+				}
+			}
+
+			swap_col_checkbox.checked = false;
+
+			swap_colors = [null, null];
+
+			pal_col_swp_1.innerText = "--";
+			pal_col_swp_1.style.backgroundColor = "#fff";
+			pal_col_swp_1.style.color = "#000";
+
+			select_swap_color = 0;
+
+			updateSpriteGrid();
+			updatePaletteColorSelection(selected_color);
+		} else {
+			pal_col_swp_1.innerText = swap_colors[0].col_num + ": " + swap_colors[0].color15b;
+			pal_col_swp_1.style.color = swap_colors[0].text_color;
+			pal_col_swp_1.style.backgroundColor = "#" + swap_colors[0].color24b;
+
+			select_swap_color = 2;
+		}
+	} else if (edit_palette || force_edit) {
 		let button = document.getElementById("col_" + col_num);
 
 		color_conv_box.value = "";
