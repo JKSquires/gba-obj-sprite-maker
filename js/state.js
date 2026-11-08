@@ -83,6 +83,7 @@ function updatePaletteDataFormat() {
 /* Allows the user to edit or use a palette color.
 Parameters:
 - col_num (string): Hexadecimal index for the color in the palette
+- force_edit (boolean): Force edit mode
 Globals Used:
 - edit_palette
 - color_conv_box
@@ -99,9 +100,10 @@ Side-Effects:
 - Updates `pal_col_id` text
 - Opens `palette_dialog`
 - Calls `updatePaletteColorSelection` function 
-Return: (undefined) */
-function colorButtonFunc(col_num) {
-	if (edit_palette) {
+Return: (boolean)
+  Always returns false  */
+function colorButtonFunc(col_num, force_edit) {
+	if (edit_palette || force_edit) {
 		let button = document.getElementById("col_" + col_num);
 
 		color_conv_box.value = "";
@@ -115,4 +117,6 @@ function colorButtonFunc(col_num) {
 	} else {
 		updatePaletteColorSelection(col_num);
 	}
+
+	return false;
 }

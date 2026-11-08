@@ -87,7 +87,8 @@ function loadPaletteButtons() {
 		col_button.dataset.color15b = "0000";
 		col_button.dataset.color24b = "000000";
 		
-		col_button.onclick = () => colorButtonFunc(hex_index);
+		col_button.onclick = () => colorButtonFunc(hex_index, false);
+		col_button.oncontextmenu = () => colorButtonFunc(hex_index, true);
 
 		updateColorButtonTextColor(col_button);
 
