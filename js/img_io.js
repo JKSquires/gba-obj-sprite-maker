@@ -73,7 +73,7 @@ function saveBMP(depth) {
 	bmp_data[26] = 1; // number of planes
 	bmp_data[28] = depth; // bits per pixel
 
-	// color data
+	// color data (normally, you'd have to ensure the bytes of each row is a multiple of 4, but all the sprite widths are multiples of 4, so this is ignored in this code)
 	let color_data_i = 0x36;
 	if (depth == 16) {
 		for (let y = img_dim[1] - 1; y >= 0; y--) {
