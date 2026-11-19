@@ -6,6 +6,7 @@ const grid_scale = document.getElementById("grid_scale");
 const halfword_dir = document.getElementById("halfword_dir");
 const hex_prefix = document.getElementById("hex_prefix");
 const load_pal = document.getElementById("load_pal");
+const load_pal_sprite = document.getElementById("load_pal_sprite");
 const load_sprite = document.getElementById("load_sprite");
 const num_color_checkbox = document.getElementById("num_color_checkbox");
 const pal_col_code = document.getElementById("pal_col_code");

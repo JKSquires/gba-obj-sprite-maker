@@ -133,6 +133,8 @@ function saveData(selection, file_name) {
 }
 
 /* Loads uploaded palette data to the palette editor.
+Parameters:
+- file (File) [optional]
 Globals used:
 - load_pal
 - pal_name
@@ -149,10 +151,10 @@ Side-Effects:
 - Updates palette buttons to loaded palette data
 - Shows alert
 Returns: (undefined) */
-async function loadPalData() {
+async function loadPalData(file) {
 	if (!checkHalfwordDirective()) return;
 
-	let file = load_pal.files[0];
+	if (file === undefined) file = load_pal.files[0];
 
 	if (file) {
 		let text = (await file.text()).replaceAll(":", ":\n").replaceAll('\t', '').replaceAll(' ', '').replaceAll('\r', '').split('\n');
@@ -212,6 +214,8 @@ async function loadPalData() {
 }
 
 /* Loads uploaded sprite data to the sprite grid.
+Parameters:
+- file (File) [optional]
 Globals Used:
 - use_word
 - load_sprite
@@ -228,13 +232,13 @@ Side-Effects:
 - Updates `pixel_grid` with loaded sprite data
 - Show alert
 Return: (undefined) */
-async function loadSpriteData() {
+async function loadSpriteData(file) {
 	if (!checkHalfwordDirective()) return;
 	if (use_word) {
 		if (!checkWordDirective()) return;
 	}
 
-	let file = load_sprite.files[0];
+	if (file === undefined) file = load_sprite.files[0];
 
 	if (file) {
 		let text = (await file.text()).replaceAll(":", ":\n").replaceAll('\t', '').replaceAll(' ', '').replaceAll('\r', '').replaceAll(',', '').split('\n');
@@ -267,7 +271,7 @@ async function loadSpriteData() {
 
 								if (pal_col == 256) {
 									if (row_data.length < 3 && !attempt_16_when_256) {
-										attempt_16_when_256 = confirm("Sprite data appears to be for a 16-color palette. Attempt to load?");
+										attempt_16_when_256 = confirm("Sprite data appears to be for a 16-color palette or uses different prefixes than those selected. Attempt to load anyway?");
 										if (!attempt_16_when_256) {
 											return;
 										}
@@ -309,7 +313,7 @@ async function loadSpriteData() {
 								
 								if (pal_col == 256) {
 									if (row_data.length < 5 && !attempt_16_when_256) {
-										attempt_16_when_256 = confirm("Sprite data appears to be for a 16-color palette. Attempt to load?");
+										attempt_16_when_256 = confirm("Sprite data appears to be for a 16-color palette or uses different prefixes than those selected. Attempt to load anyway?");
 										if (!attempt_16_when_256) {
 											return;
 										}
@@ -356,4 +360,22 @@ async function loadSpriteData() {
 			alert("Could not find sprite label `" + sprite_name.value + ":` in file");
 		}
 	}
+}
+
+/* Loads uploaded palette and sprite data to the palette editor and sprite grid.
+Parameters:
+- file (File) [optional]
+Globals Used:
+- load_pal_sprite
+- load_pal
+- load_sprite
+Preconditions:
+- The `updateGridSize` function should be run at least once before using this function
+Side-Effects:
+- Calls `loadPalData` and `loadSpriteData` functions
+Return: (undefined) */
+async function loadPalSpriteData(file) {
+	if (file === undefined) file = load_pal_sprite.files[0];
+	await loadPalData(file);
+	await loadSpriteData(file);
 }
