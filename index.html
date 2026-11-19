@@ -31,12 +31,17 @@
 	</select>
 </p>
 
-<p>Load Palette Data: <input type="file" onchange="loadPalData()" id="load_pal"></p>
-<p>Load Sprite Data: <input type="file" onchange="loadSpriteData()" id="load_sprite"></p>
-
-<button onclick="saveData(1, pal_name.value + '.asm')" id="save_pal">Save Palette Data</button>
-<button onclick="saveData(2, sprite_name.value + '.asm')" id="save_sprite">Save Sprite Data</button>
-<button onclick="saveData(3, pal_name.value + '_' + sprite_name.value + '.asm')" id="save_pal_sprite">Save Palette and Sprite Data</button>
+<table>
+	<tr>
+		<td><button onclick="saveData(1, pal_name.value + '.asm')" id="save_pal">Save Palette Data</button></td>
+		<td><button onclick="saveData(2, sprite_name.value + '.asm')" id="save_sprite">Save Sprite Data</button></td>
+		<td><button onclick="saveData(3, pal_name.value + '_' + sprite_name.value + '.asm')" id="save_pal_sprite">Save Palette and Sprite Data</button></td>
+	</tr>
+	<tr>
+		<td><p>Load Palette Data:<br><input type="file" onchange="loadPalData()" id="load_pal"></p></td>
+		<td><p>Load Sprite Data:<br><input type="file" onchange="loadSpriteData()" id="load_sprite"></p></td>
+	</tr>
+</table>
 <br><br>
 <button onclick="saveBMP(16)" id="save_bmp_16">Export 16bpp BMP</button>
 <button onclick="saveBMP(24)" id="save_bmp_24">Export 24bpp BMP</button>
